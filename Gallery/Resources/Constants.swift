@@ -9,4 +9,5 @@ import UIKit
 
 struct Constants {
     static let screenScale = UIScreen().scale
+    static let imageCacheServiceCountLimit = 100
 }
