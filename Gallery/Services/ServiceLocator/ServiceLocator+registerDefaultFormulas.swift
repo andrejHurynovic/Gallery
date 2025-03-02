@@ -9,5 +9,6 @@ extension ServiceLocator {
     static func registerDefaultFormulas() {
         ServiceLocator.shared.register(KeychainService() as KeychainServiceProtocol)
         ServiceLocator.shared.register(ImageCacheService<ImageBox>() as ImageCacheService)
+        ServiceLocator.shared.register(AlertService() as AlertServiceProtocol)
     }
 }
