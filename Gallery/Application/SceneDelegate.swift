@@ -15,8 +15,11 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let navigationController = UINavigationController()
-        applicationCoordinator = ApplicationCoordinator(with: navigationController)
-        applicationCoordinator?.start()
+        let applicationCoordinator = ApplicationCoordinator(with: navigationController)
+        ServiceLocator.shared.register(applicationCoordinator as ApplicationNavigator)
+        applicationCoordinator.start()
+        
+        self.applicationCoordinator = applicationCoordinator
         
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = navigationController
