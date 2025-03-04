@@ -14,7 +14,7 @@ struct Alert {
     
     init(title: String,
          message: String? = nil,
-         actions: [Action] = [],
+         actions: Action...,
          defaultDismissAction: DismissAction? = .dismiss) {
         self.title = title
         self.message = message
