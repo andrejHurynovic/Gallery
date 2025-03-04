@@ -14,7 +14,12 @@ final class AlertService: AlertServiceProtocol {
     private var alertQueue = [Alert]()
     private var isShowingAlert = false
     
-    func showAlert(_ alert: Alert, on viewController: UIViewController) {
+    @MainActor func showAlert(_ alert: Alert) {
+        guard let topViewController = UIApplication.topViewController() else { return }
+        showAlert(alert, on: topViewController)
+    }
+    
+    @MainActor func showAlert(_ alert: Alert, on viewController: UIViewController) {
         let currentTime = Date()
         
         guard lastShownAlert != alert || currentTime.timeIntervalSince(lastShownTime!) > Constants.alertCooldownTime else { return }
@@ -29,9 +34,16 @@ final class AlertService: AlertServiceProtocol {
         }
     }
     
-    func showAlert(for error: Error, on viewController: UIViewController) {
+    @MainActor func showAlert(for error: any Error) {
+        guard let topViewController = UIApplication.topViewController() else { return }
+        showAlert(for: error, on: topViewController)
+    }
+    @MainActor func showAlert(for error: Error, on viewController: UIViewController) {
         let alert: Alert
         switch error {
+        case let error as AlertProvider:
+            guard let providedAlert = error.alert else { fallthrough }
+            alert = providedAlert
         default:
             alert = Alert(title: "An error occurred", message: error.localizedDescription)
         }
