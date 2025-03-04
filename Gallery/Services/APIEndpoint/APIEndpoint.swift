@@ -45,7 +45,8 @@ enum APIEndpoint: APIEndpointProtocol {
 }
 
 private extension APIEndpoint {
-    static let baseComponents = URLComponents(url: Constants.baseAPIEndpointURL, resolvingAgainstBaseURL: false)!
+    static let photosComponents = URLComponents(url: Constants.baseAPIEndpointURL.appendingPathComponent(APIEndpointConstants.photosPath), resolvingAgainstBaseURL: false)!
+    static let photosSearchComponents = URLComponents(url: Constants.baseAPIEndpointURL.appendingPathComponent(APIEndpointConstants.searchPath).appendingPathComponent(APIEndpointConstants.photosPath), resolvingAgainstBaseURL: false)!
     
     static func queryItems(page: Int, photosPerPage: Int, query: String? = nil) -> [URLQueryItem] {
         var items: [URLQueryItem] = [URLQueryItem(name: APIEndpointConstants.pageQueryItem, value: String(page)),
@@ -55,13 +56,13 @@ private extension APIEndpoint {
     }
     
     func makePhotosURL(page: Int, photosPerPage: Int) -> URL? {
-        var components = Self.baseComponents
+        var components = Self.photosComponents
         components.queryItems = Self.queryItems(page: page, photosPerPage: photosPerPage)
         return components.url
     }
     
     func makePhotosSearchURL(page: Int, photosPerPage: Int, query: String) -> URL? {
-        var components = Self.baseComponents
+        var components = Self.photosSearchComponents
         components.queryItems = Self.queryItems(page: page, photosPerPage: photosPerPage, query: query)
         return components.url
     }
@@ -87,10 +88,15 @@ private extension APIEndpoint {
         static let authorizationHeader = "Authorization"
         // Must contain one space after Client-ID
         static let authorizationPrefix = "Client-ID "
+        
         static let pageQueryItem = "page"
         static let perPageQueryItem = "per_page"
         static let queryQueryItem = "query"
+        
         static let widthQueryItem = "w"
         static let heightQueryItem = "h"
+
+        static let photosPath = "photos"
+        static let searchPath = "search"
     }
 }
