@@ -8,8 +8,6 @@
 import Foundation
 
 protocol ImageCacheServiceProtocol {
-    associatedtype ImageBoxType: ImageBoxProtocol
-    
-    func addImage(id: String, _ image: ImageBoxType)
-    func getImage(_ requirements: ImageRequirementsProtocol) -> ImageBoxType?
+    func addImage(id: String, _ image: any ImageBoxProtocol)
+    func getImage(_ requirements: ImageRequirementsProtocol) -> (any ImageBoxProtocol)?
 }
