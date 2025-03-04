@@ -15,7 +15,7 @@ final class KeychainService: KeychainServiceProtocol {
         kSecAttrAccount: "unsplashAPIKey"
     ]
     
-    private lazy var _apiKey = try? getKey()
+    private lazy var _apiKey = getKey()
     var apiKey: String? {
         get { _apiKey }
         set {
@@ -26,18 +26,24 @@ final class KeychainService: KeychainServiceProtocol {
 }
 
 extension KeychainService {
-    private func getKey() throws(KeychainError) -> String? {
+    private func getKey() -> String? {
         var query = keychainQuery
         query[kSecReturnData] = true
         
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
-        guard status == errSecSuccess, let data = result as? Data else { throw KeychainError(status: status) }
+        guard status == errSecSuccess, let data = result as? Data else {
+            let alertService: (any AlertServiceProtocol)? = ServiceLocator.shared.resolve()
+            Task { @MainActor in
+                alertService?.showAlert(for: KeychainServiceError(status: status))
+            }
+            return nil
+        }
         return String(data: data, encoding: .utf8)
     }
     
-    private func setKey(_ key: String?) throws(KeychainError) {
+    private func setKey(_ key: String?) throws(KeychainServiceError) {
         guard let key = key else {
             try? deleteKey()
             return
@@ -49,12 +55,12 @@ extension KeychainService {
         
         try? deleteKey()
         let status = SecItemAdd(query as CFDictionary, nil)
-        guard status == errSecSuccess else { throw KeychainError(status: status) }
+        guard status == errSecSuccess else { throw KeychainServiceError(status: status) }
     }
     
-    private func deleteKey() throws(KeychainError) {
+    private func deleteKey() throws(KeychainServiceError) {
         let query = keychainQuery
         let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess else { throw KeychainError(status: status) }
+        guard status == errSecSuccess else { throw KeychainServiceError(status: status) }
     }
 }
