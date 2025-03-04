@@ -1,5 +1,5 @@
 //
-//  KeychainError.swift
+//  KeychainServiceError.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 28.02.2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum KeychainError: Error {
+enum KeychainServiceError: Error {
     case itemAlreadyExist
     case itemNotFound
     case errorStatus(String?)
