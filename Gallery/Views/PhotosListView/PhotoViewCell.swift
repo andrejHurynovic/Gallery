@@ -11,6 +11,7 @@ final class PhotoViewCell: UICollectionViewCell {
     @Injected var dataService: (any DataServiceProtocol)?
     
     private let imageView = UIImageView()
+    private let favoriteIconImageView = UIImageView()
     private var imageTask: Task<Void, Never>?
     
     // MARK: - Initialization
@@ -37,6 +38,18 @@ final class PhotoViewCell: UICollectionViewCell {
     private func setup() {
         layer.cornerRadius = 10
         setupImageView()
+        setupFavoriteIconImageView()
+    }
+    
+    private func setupFavoriteIconImageView() {
+        favoriteIconImageView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(favoriteIconImageView)
+        NSLayoutConstraint.activate([
+            favoriteIconImageView.heightAnchor.constraint(equalToConstant: Constants.UserInterface.smallIconSize),
+            favoriteIconImageView.widthAnchor.constraint(equalToConstant: Constants.UserInterface.smallIconSize),
+            favoriteIconImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -6),
+            favoriteIconImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6)
+        ])
     }
     
     private func setupImageView() {
@@ -58,6 +71,7 @@ final class PhotoViewCell: UICollectionViewCell {
     
     func update(with photo: any PhotoProtocol) {
         backgroundColor = UIColor(hexadecimalColorCode: photo.hexadecimalColorCode)
+        favoriteIconImageView.image = UIImage(resource: photo.isFavorite ? .favoriteFilled : .favorite).withTintColor(.white)
         addImageUpdateTask(with: photo)
     }
     
