@@ -54,6 +54,10 @@ final class PhotosListHelper {
             return self?.layoutSection(for: sectionIndex)
         }
     }
+    
+    func identifier(for indexPath: IndexPath) -> Int {
+        sectionOffset(for: indexPath.section) + indexPath.item
+    }
 
     // MARK: - Private
     
