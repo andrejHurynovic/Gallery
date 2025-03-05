@@ -10,6 +10,7 @@ import UIKit
 struct Constants {
     static let screenScale = UIScreen().scale
     static let baseAPIEndpointURL = URL(string: "https://api.unsplash.com")!
+    static let photosFetchPageSize = 30
     /// The maximum number of images that can be stored in the image cache service at one time.
     static let imageCacheServiceCountLimit = 100
     /// The cooldown time (in seconds) between showing the same alert to the user.
