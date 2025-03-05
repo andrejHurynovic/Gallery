@@ -28,6 +28,9 @@ final class PhotosListViewModel {
         requestMoreContent()
     }
     
+    func toggleFavorite(for itemIndex: Int) {
+        photos[itemIndex].isFavorite.toggle()
+    }
     // MARK: - Private
     
     private func requestMoreContent() {
@@ -35,7 +38,7 @@ final class PhotosListViewModel {
         
         Task { [weak self] in
             guard let dataService = self?.dataService,
-                  let photos = await dataService.getPhotos(for: "minsk") else {
+                  let photos = await dataService.getPhotos(for: nil) else {
                 self?.awaitingMoreContent = false
                 return
             }
