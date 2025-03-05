@@ -29,6 +29,10 @@ class ImageButton: UIButton {
     
     // MARK: - Private
     
+    override func setImage(_ image: UIImage?, for state: UIControl.State) {
+        super.setImage(image?.withTintColor(.label), for: state)
+    }
+    
     private func setupButton(image: UIImage?) {
         self.setImage(image, for: .normal)
         self.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
