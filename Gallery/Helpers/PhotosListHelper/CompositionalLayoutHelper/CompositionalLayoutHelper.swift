@@ -30,7 +30,7 @@ extension PhotosListHelper {
         private lazy var verticalRectangle = NSCollectionLayoutItem(layoutSize: verticalRectangleSize)
         private lazy var horizontalRectangle = NSCollectionLayoutItem(layoutSize: horizontalRectangleSize)
         
-        // MARK: - Public Methods
+        // MARK: - Public
         
         func layoutSection(for sectionIndex: Int) -> (section: NSCollectionLayoutSection, numberOfItems: Int) {
             if sectionIndex >= cache.count {
@@ -42,7 +42,7 @@ extension PhotosListHelper {
             }
         }
         
-        // MARK: - Private Methods
+        // MARK: - Private
         
         private func createLayoutSection() -> (section: NSCollectionLayoutSection, numberOfItems: Int) {
             var columnsLeft = requirements.numberOfColumns

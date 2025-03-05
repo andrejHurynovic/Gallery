@@ -19,7 +19,7 @@ final class PhotosListHelper {
     private var sectionOffsets: [Int] = [0]
     private var itemsInSections: [[Int]] = []
     
-    // MARK: - Public Methods
+    // MARK: - Public
     
     func update(with itemsCount: Int) {
         guard currentItemsCount != itemsCount else { return }
@@ -55,7 +55,7 @@ final class PhotosListHelper {
         }
     }
 
-    // MARK: - Private Methods
+    // MARK: - Private
     
     private func forceUpdate() {
         let itemCount = currentItemsCount
