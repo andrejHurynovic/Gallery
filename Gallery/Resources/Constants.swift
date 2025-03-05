@@ -16,15 +16,17 @@ struct Constants {
     static let imageCacheServiceCountLimit = 100
     /// The cooldown time (in seconds) between showing the same alert to the user.
     static let alertCooldownTime: TimeInterval = 15
+    
+    static let animationDuration: TimeInterval = 0.3
 }
 
 extension Constants {
     struct UserInterface {
         static let cornerRadius: CGFloat = 10
+        static let horizontalSpacing: CGFloat = 16
         
         static let photoCellMinimalWidth: CGFloat = 100
         static let photoCellHeight: CGFloat = 84
-        static let photoCellSpacing: CGFloat = 16
         
         static let smallIconSize: CGFloat = 12
         static let largeIconSize: CGFloat = 24

@@ -23,7 +23,7 @@ extension PhotosListHelper.CompositionalLayoutHelper {
         init(containerWidth: CGFloat,
              minimalItemWidth: CGFloat = Constants.UserInterface.photoCellMinimalWidth,
              itemHeight: CGFloat = Constants.UserInterface.photoCellHeight,
-             itemSpacing: CGFloat = Constants.UserInterface.photoCellSpacing) {
+             itemSpacing: CGFloat = Constants.UserInterface.horizontalSpacing) {
             self.numberOfColumns = Int((containerWidth / (minimalItemWidth + itemSpacing)).rounded(.down))
             let totalSpacing = CGFloat(numberOfColumns + 1) * itemSpacing
             self.itemWidth = (containerWidth - totalSpacing) / CGFloat(numberOfColumns)

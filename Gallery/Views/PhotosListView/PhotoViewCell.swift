@@ -83,7 +83,7 @@ final class PhotoViewCell: UICollectionViewCell {
                   let imageBox = await dataService?.scaledImage(for: requirements(for: photo)),
                   let image = imageBox.image as? UIImage else { return }
             await MainActor.run {
-                UIView.transition(with: self, duration: 0.3,
+                UIView.transition(with: self, duration: Constants.animationDuration,
                                   options: .transitionCrossDissolve) {
                     self.imageView.image = image
                 }
