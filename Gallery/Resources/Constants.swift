@@ -16,3 +16,11 @@ struct Constants {
     /// The cooldown time (in seconds) between showing the same alert to the user.
     static let alertCooldownTime: TimeInterval = 15
 }
+
+extension Constants {
+    struct UserInterface {
+        static let photoCellMinimalWidth: CGFloat = 100
+        static let photoCellHeight: CGFloat = 84
+        static let photoCellSpacing: CGFloat = 16
+    }
+}
