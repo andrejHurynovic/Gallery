@@ -23,14 +23,13 @@ enum APIEndpoint: APIEndpointProtocol {
         
         var request = URLRequest(url: url)
         request.setValue(APIEndpointConstants.authorizationPrefix + apiKey, forHTTPHeaderField: APIEndpointConstants.authorizationHeader)
-        
         return request
     }
     
     private var url: URL? {
         switch self {
         case let .photo(id):
-            return Constants.baseAPIEndpointURL.appendingPathComponent(id)
+            return Constants.baseAPIEndpointURL.appendingPathComponent(APIEndpointConstants.photosPath).appendingPathComponent(id)
         case let .photos(page, photosPerPage):
             return makePhotosURL(page: page, photosPerPage: photosPerPage)
         case let .photosSearch(page, photosPerPage, query):
@@ -45,8 +44,11 @@ enum APIEndpoint: APIEndpointProtocol {
 }
 
 private extension APIEndpoint {
-    static let photosComponents = URLComponents(url: Constants.baseAPIEndpointURL.appendingPathComponent(APIEndpointConstants.photosPath), resolvingAgainstBaseURL: false)!
-    static let photosSearchComponents = URLComponents(url: Constants.baseAPIEndpointURL.appendingPathComponent(APIEndpointConstants.searchPath).appendingPathComponent(APIEndpointConstants.photosPath), resolvingAgainstBaseURL: false)!
+    static let photosComponents = URLComponents(url: Constants.baseAPIEndpointURL
+        .appendingPathComponent(APIEndpointConstants.photosPath), resolvingAgainstBaseURL: false)!
+    static let photosSearchComponents = URLComponents(url: Constants.baseAPIEndpointURL
+        .appendingPathComponent(APIEndpointConstants.searchPath)
+        .appendingPathComponent(APIEndpointConstants.photosPath), resolvingAgainstBaseURL: false)!
     
     static func queryItems(page: Int, photosPerPage: Int, query: String? = nil) -> [URLQueryItem] {
         var items: [URLQueryItem] = [URLQueryItem(name: APIEndpointConstants.pageQueryItem, value: String(page)),
