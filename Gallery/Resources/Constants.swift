@@ -27,5 +27,6 @@ extension Constants {
         static let photoCellSpacing: CGFloat = 16
         
         static let smallIconSize: CGFloat = 12
+        static let largeIconSize: CGFloat = 24
     }
 }
