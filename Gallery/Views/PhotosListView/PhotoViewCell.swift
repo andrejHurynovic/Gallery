@@ -36,7 +36,7 @@ final class PhotoViewCell: UICollectionViewCell {
     // MARK: - Setup
     
     private func setup() {
-        layer.cornerRadius = 10
+        layer.cornerRadius = Constants.UserInterface.cornerRadius
         setupImageView()
         setupFavoriteIconImageView()
     }
@@ -53,7 +53,7 @@ final class PhotoViewCell: UICollectionViewCell {
     }
     
     private func setupImageView() {
-        imageView.layer.cornerRadius = 10
+        imageView.layer.cornerRadius = Constants.UserInterface.cornerRadius
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFill

@@ -20,6 +20,8 @@ struct Constants {
 
 extension Constants {
     struct UserInterface {
+        static let cornerRadius: CGFloat = 10
+        
         static let photoCellMinimalWidth: CGFloat = 100
         static let photoCellHeight: CGFloat = 84
         static let photoCellSpacing: CGFloat = 16
