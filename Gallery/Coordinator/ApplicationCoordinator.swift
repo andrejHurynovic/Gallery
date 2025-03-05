@@ -36,9 +36,7 @@ final class ApplicationCoordinator: Coordinator {
     // MARK: - Private
     
     private func navigateToPhotosListView() {
-        let viewModel = PhotosListViewModel(loadingStrategy: .cellUpdate)
         let viewController = PhotosListViewController()
-        viewController.viewModel = viewModel
         navigationController.pushViewController(viewController, animated: false)
     }
 }
