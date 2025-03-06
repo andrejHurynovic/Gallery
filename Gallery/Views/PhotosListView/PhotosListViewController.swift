@@ -60,6 +60,8 @@ final class PhotosListViewController: UIViewController {
     // MARK: - Layout
     private func addCollectionView() {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.delegate = self
+        
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -135,6 +137,25 @@ private extension PhotosListViewController {
             snapshot.appendItems(helper.itemIndexes(for: sectionsIndex), toSection: sectionsIndex)
         }
         dataSource.apply(snapshot, animatingDifferences: true)
+    }
+     
+    func reloadItem(_ itemIdentifier: Int) {
+        var snapshot = dataSource.snapshot() 
+        snapshot.reloadItems([itemIdentifier])
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+}
+
+// MARK: - Delegate
+extension PhotosListViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        let itemIdentifier = helper.identifier(for: indexPath)
+        let viewController = PhotoDetailViewController(viewModel: viewModel)
+        
+        present(viewController, animated: true)
+        viewController.update(with: viewModel.photos[itemIdentifier], index: itemIdentifier)
+        
+        return true
     }
 }
 
