@@ -19,6 +19,7 @@ final class PhotoViewCell: UICollectionViewCell {
         super.init(frame: frame)
         setup()
     }
+    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()

@@ -38,6 +38,7 @@ final class AlertService: AlertServiceProtocol {
         guard let topViewController = UIApplication.topViewController() else { return }
         showAlert(for: error, on: topViewController)
     }
+    
     @MainActor func showAlert(for error: Error, on viewController: UIViewController) {
         let alert: Alert
         switch error {

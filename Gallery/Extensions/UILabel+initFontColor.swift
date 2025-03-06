@@ -11,9 +11,9 @@ extension UILabel {
     convenience init(font: UIFont, color: UIColor? = nil) {
         self.init()
         self.font = font
-        if let color { self.textColor = color}
+        if let color { self.textColor = color }
         
-        adjustsFontSizeToFitWidth = true
+        adjustsFontForContentSizeCategory = true
         numberOfLines = 0
     }
 }

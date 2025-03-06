@@ -30,7 +30,7 @@ final class PhotosListViewModel {
         photos[itemIndex].isFavorite.toggle()
     }
     func downloadImage(for itemIndex: Int) {
-
+        
     }
     
     func getUpdatedPhoto(for id: String) async -> (any PhotoProtocol)? {

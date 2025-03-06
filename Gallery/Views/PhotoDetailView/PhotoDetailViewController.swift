@@ -15,7 +15,7 @@ final class PhotoDetailViewController: UIViewController {
     
     private var photo: (any PhotoProtocol)!
     
-    private var contentView: View!
+    private var contentView = View()
     
     private var lastImageViewWidth: CGFloat = 0.0
     
@@ -29,10 +29,7 @@ final class PhotoDetailViewController: UIViewController {
     
     // MARK: - Lifecycle
     override func loadView() {
-        let view = View()
-        self.view = view
-        contentView = view
-        
+        self.view = contentView
     }
     
     override func viewDidLayoutSubviews() {

@@ -68,6 +68,7 @@ final class DataService: DataServiceProtocol {
         guard let data = await networkService?.fetch(APIEndpoint.photos(page: currentFetchPage, photosPerPage: Constants.photosFetchPageSize)) else { return nil }
         return try? JSONDecoder().decode([Photo].self, from: data)
     }
+    
     private func fetchPhotos(for query: String) async -> [Photo]? {
         guard let data = await networkService?.fetch(APIEndpoint.photosSearch(page: currentFetchPage, photosPerPage: Constants.photosFetchPageSize, query: query)),
               let result = try? JSONDecoder().decode(PhotosSearchResult.self, from: data) else { return nil }

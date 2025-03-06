@@ -94,13 +94,13 @@ extension PhotosListHelper.CompositionalLayoutHelper {
     }
     
     private func generateRandomBigSquare() -> CollectionLayoutGroupBox {
-        switch Int.random(in: 0...3) {
+        return switch Int.random(in: 0...3) {
         case 0:
-            return CollectionLayoutGroupBox(item: bigSquare, itemsCount: 1)
+            CollectionLayoutGroupBox(item: bigSquare, itemsCount: 1)
         case 1:
-            return combineGroups([generateRandomHorizontalRectangle(), generateRandomHorizontalRectangle()], axis: .vertical, layoutSize: bigSquareSize)
+            combineGroups([generateRandomHorizontalRectangle(), generateRandomHorizontalRectangle()], axis: .vertical, layoutSize: bigSquareSize)
         default:
-            return combineGroups([generateRandomVerticalRectangle(), generateRandomVerticalRectangle()], axis: .horizontal, layoutSize: bigSquareSize)
+            combineGroups([generateRandomVerticalRectangle(), generateRandomVerticalRectangle()], axis: .horizontal, layoutSize: bigSquareSize)
         }
     }
     

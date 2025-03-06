@@ -50,6 +50,7 @@ final class PhotosListViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
+    
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: helper.collectionViewLayout(for: requirements))
         dataSource = createDataSource(for: collectionView)

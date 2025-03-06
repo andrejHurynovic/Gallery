@@ -20,8 +20,8 @@ final class ServiceLocator: ServiceLocating {
         let instance = formula()
         instances[identifier] = instance
         return instance as? T
-        
     }
+    
     func register<T>(_ closure: @escaping @autoclosure () -> (T)) {
         let identifier = String(describing: T.self)
         formulas[identifier] = closure
