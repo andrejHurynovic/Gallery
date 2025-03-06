@@ -20,7 +20,6 @@ final class PhotosListHelper {
     private var itemsInSections: [[Int]] = []
     
     // MARK: - Public
-    
     func update(with itemsCount: Int) {
         guard currentItemsCount != itemsCount else { return }
         _ = itemsInSections.popLast()
@@ -60,7 +59,6 @@ final class PhotosListHelper {
     }
 
     // MARK: - Private
-    
     private func forceUpdate() {
         let itemCount = currentItemsCount
         resetCache()

@@ -11,7 +11,6 @@ class ImageButton: UIButton {
     var action: (() -> Void)?
     
     // MARK: - Initialization
-    
     init(image: UIImage? = nil, action: (() -> Void)? = nil) {
         self.action = action
         super.init(frame: .zero)
@@ -19,7 +18,6 @@ class ImageButton: UIButton {
     }
     
     // MARK: - Lifecycle
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         adjustImageInsets()
@@ -28,7 +26,6 @@ class ImageButton: UIButton {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     // MARK: - Private
-    
     override func setImage(_ image: UIImage?, for state: UIControl.State) {
         super.setImage(image?.withTintColor(.label), for: state)
     }

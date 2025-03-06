@@ -18,13 +18,11 @@ final class ApplicationCoordinator: Coordinator {
     }
     
     // MARK: - Initialization
-    
     init(with navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
     
     // MARK: - Public
-    
     func start() {
         if isAPIKeyProvided {
             navigateToPhotosListView()
@@ -34,7 +32,6 @@ final class ApplicationCoordinator: Coordinator {
     }
     
     // MARK: - Private
-    
     private func navigateToPhotosListView() {
         let viewController = PhotosListViewController()
         navigationController.pushViewController(viewController, animated: false)
@@ -42,7 +39,6 @@ final class ApplicationCoordinator: Coordinator {
 }
 
 // MARK: - ApplicationNavigator
-
 extension ApplicationCoordinator: ApplicationNavigator {
     func navigateToSettings() {
         

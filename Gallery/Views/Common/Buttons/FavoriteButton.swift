@@ -13,7 +13,6 @@ final class FavoriteButton: ImageButton {
     }
     
     // MARK: - Initialization
-    
     init(action: (() -> Void)? = nil) {
         super.init(action: action)
         updateImage()
@@ -22,7 +21,6 @@ final class FavoriteButton: ImageButton {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     // MARK: - Private
-    
     private func updateImage() {
         let image = isFavorite ? UIImage(resource: .favoriteFilled) : UIImage(resource: .favorite)
         self.setImage(image, for: .normal)

@@ -15,7 +15,6 @@ final class PhotoViewCell: UICollectionViewCell {
     private var imageTask: Task<Void, Never>?
     
     // MARK: - Initialization
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -26,7 +25,6 @@ final class PhotoViewCell: UICollectionViewCell {
     }
     
     // MARK: - Lifecycle
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         imageTask?.cancel()
@@ -34,7 +32,6 @@ final class PhotoViewCell: UICollectionViewCell {
     }
     
     // MARK: - Setup
-    
     private func setup() {
         layer.cornerRadius = Constants.UserInterface.cornerRadius
         setupImageView()
@@ -67,16 +64,14 @@ final class PhotoViewCell: UICollectionViewCell {
         ])
     }
     
-    // MARK: - Public methods
-    
+    // MARK: - Public
     func update(with photo: any PhotoProtocol) {
         backgroundColor = UIColor(hexadecimalColorCode: photo.hexadecimalColorCode)
         favoriteIconImageView.image = UIImage(resource: photo.isFavorite ? .favoriteFilled : .favorite).withTintColor(.white)
         addImageUpdateTask(with: photo)
     }
     
-    // MARK: - Private methods
-    
+    // MARK: - Private
     private func addImageUpdateTask(with photo: any PhotoProtocol) {
         imageTask = Task {
             guard Task.isCancelled == false,

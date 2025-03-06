@@ -22,12 +22,10 @@ final class PhotosListViewController: UIViewController {
     private var safeAreaWidth: CGFloat { dummyView.bounds.width }
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         addDummyView()
         previousSafeAreaWidth = safeAreaWidth
-        
         configureCollectionView()
         addCollectionView()
         addCancellables()
@@ -44,8 +42,7 @@ final class PhotosListViewController: UIViewController {
     }
     
     // MARK: - Setup
-    
-    private func addCancellables() {  
+    private func addCancellables() {
         viewModel.$photos
             .receive(on: DispatchQueue.main)
             .sink { [weak self] photos in
@@ -61,7 +58,6 @@ final class PhotosListViewController: UIViewController {
     }
     
     // MARK: - Layout
-    
     private func addCollectionView() {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
@@ -88,7 +84,6 @@ final class PhotosListViewController: UIViewController {
     }
     
     // MARK: - Layout helper
-    
     private func updateCollectionViewLayout() {
         guard previousSafeAreaWidth != safeAreaWidth else { return }
         previousSafeAreaWidth = safeAreaWidth
@@ -105,6 +100,7 @@ private extension PhotosListViewController {
     }
 }
 
+// MARK: - DataSource
 private extension PhotosListViewController {
     typealias SectionIdentifierType = Int
     typealias ItemIdentifierType = Int

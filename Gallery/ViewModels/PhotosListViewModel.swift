@@ -15,13 +15,11 @@ final class PhotosListViewModel {
     var awaitingMoreContent: Bool = false
     
     // MARK: - Initialization
-    
     init() {
         requestMoreContent()
     }
     
     // MARK: - Public
-    
     func shouldRequestMoreContent(for itemIndex: Int) {
         guard awaitingMoreContent == false,
               photos.count - itemIndex < Constants.imageFetchThreshold else { return }
@@ -31,7 +29,6 @@ final class PhotosListViewModel {
     func toggleFavorite(for itemIndex: Int) {
         photos[itemIndex].isFavorite.toggle()
     }
-    // MARK: - Private
     
     private func requestMoreContent() {
         awaitingMoreContent = true

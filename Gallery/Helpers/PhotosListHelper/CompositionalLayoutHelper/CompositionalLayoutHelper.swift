@@ -13,13 +13,11 @@ extension PhotosListHelper {
         private var cache: [(section: NSCollectionLayoutSection, numberOfItems: Int)] = []
         
         // MARK: - Initializer
-        
         init(requirements: Requirements) {
             self.requirements = requirements
         }
         
         // MARK: - Layout Items
-        
         private lazy var smallSquareSize = requirements.collectionLayoutDimension(heightMultiplier: 1, widthMultiplier: 1)
         private lazy var bigSquareSize = requirements.collectionLayoutDimension(heightMultiplier: 2, widthMultiplier: 2)
         private lazy var verticalRectangleSize = requirements.collectionLayoutDimension(heightMultiplier: 2, widthMultiplier: 1)
@@ -31,7 +29,6 @@ extension PhotosListHelper {
         private lazy var horizontalRectangle = NSCollectionLayoutItem(layoutSize: horizontalRectangleSize)
         
         // MARK: - Public
-        
         func layoutSection(for sectionIndex: Int) -> (section: NSCollectionLayoutSection, numberOfItems: Int) {
             if sectionIndex >= cache.count {
                 let layoutSection = createLayoutSection()
@@ -43,7 +40,6 @@ extension PhotosListHelper {
         }
         
         // MARK: - Private
-        
         private func createLayoutSection() -> (section: NSCollectionLayoutSection, numberOfItems: Int) {
             var columnsLeft = requirements.numberOfColumns
             var verticalGroups: [CollectionLayoutGroupBox] = []
@@ -115,7 +111,6 @@ extension PhotosListHelper.CompositionalLayoutHelper {
 }
 
 // MARK: - Group Combination Helper
-
 extension PhotosListHelper.CompositionalLayoutHelper {
     private func combineGroups(_ boxes: [CollectionLayoutGroupBox], axis: CollectionLayoutGroupBoxJoinedAxis, layoutSize: NSCollectionLayoutSize) -> CollectionLayoutGroupBox {
         let subitems = boxes.map { $0.item }
@@ -135,7 +130,6 @@ extension PhotosListHelper.CompositionalLayoutHelper {
 }
 
 // MARK: - Helpers
-
 extension PhotosListHelper.CompositionalLayoutHelper {
     private func createVerticalGroup(from items: [NSCollectionLayoutItem], heightMultiplier: CGFloat, widthMultiplier: CGFloat) -> NSCollectionLayoutGroup {
         let group = NSCollectionLayoutGroup.vertical(layoutSize: requirements.collectionLayoutDimension(heightMultiplier: heightMultiplier, widthMultiplier: widthMultiplier), subitems: items)

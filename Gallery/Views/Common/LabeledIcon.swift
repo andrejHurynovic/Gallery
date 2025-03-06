@@ -16,7 +16,6 @@ final class LabeledIcon: UILabel {
     }
     
     // MARK: - Initialization
-    
     init(icon: UIImage,
          font: UIFont = UIFontMetrics.default.scaledFont(for: .systemFont(ofSize: 14)),
          color: UIColor = .secondaryLabel,
@@ -33,7 +32,6 @@ final class LabeledIcon: UILabel {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     // MARK: - Private
-    
     private func setupLabel(font: UIFont, color: UIColor) {
         adjustsFontForContentSizeCategory = true
         numberOfLines = 0
