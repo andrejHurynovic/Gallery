@@ -112,7 +112,7 @@ extension PhotosListHelper.CompositionalLayoutHelper {
 
 // MARK: - Group Combination Helper
 extension PhotosListHelper.CompositionalLayoutHelper {
-    private func combineGroups(_ boxes: [CollectionLayoutGroupBox], axis: CollectionLayoutGroupBoxJoinedAxis, layoutSize: NSCollectionLayoutSize) -> CollectionLayoutGroupBox {
+    private func combineGroups(_ boxes: [CollectionLayoutGroupBox], axis: GroupBoxJoinedAxis, layoutSize: NSCollectionLayoutSize) -> CollectionLayoutGroupBox {
         let subitems = boxes.map { $0.item }
         let itemCount = boxes.reduce(0) { $0 + $1.itemsCount }
         
