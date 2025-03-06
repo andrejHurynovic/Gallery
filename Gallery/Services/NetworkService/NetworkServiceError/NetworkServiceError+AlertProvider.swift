@@ -21,8 +21,8 @@ extension NetworkServiceError: AlertProvider {
     
     private var changeAPIKeyAction: Alert.Action {
         Alert.Action(text: "Change the key") {
-            let applicationCoordinator: ApplicationCoordinator? = ServiceLocator.shared.resolve()
-            applicationCoordinator?.navigateToSettings()
+            @Injected var applicationNavigator: (any ApplicationNavigator)?
+            applicationNavigator?.navigateToSettings()
         }
     }
 }

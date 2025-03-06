@@ -12,9 +12,9 @@ final class ApplicationCoordinator: Coordinator {
     var children: [any Coordinator] = []
     let navigationController: UINavigationController
     
-    var isAPIKeyProvided: Bool {
-        @Injected var alertService: (any KeychainServiceProtocol)?
-        return alertService?.apiKey != nil
+    private var isAPIKeyProvided: Bool {
+        @Injected var keychainService: (any KeychainServiceProtocol)?
+        return keychainService?.apiKey != nil
     }
     
     // MARK: - Initialization

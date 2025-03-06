@@ -34,7 +34,7 @@ extension KeychainService {
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
         guard status == errSecSuccess, let data = result as? Data else {
-            let alertService: (any AlertServiceProtocol)? = ServiceLocator.shared.resolve()
+            @Injected var alertService: (any AlertServiceProtocol)?
             Task { @MainActor in
                 alertService?.showAlert(for: KeychainServiceError(status: status))
             }

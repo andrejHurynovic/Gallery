@@ -17,8 +17,10 @@ enum APIEndpoint: APIEndpointProtocol {
     case imageWithRequirements(_ requirements: any ImageRequirementsProtocol)
     
     var request: URLRequest? {
+        @Injected var keychainManager: KeychainServiceProtocol?
+        
         guard let url = self.url,
-              let keychainManager: KeychainServiceProtocol = ServiceLocator.shared.resolve(),
+              let keychainManager,
               let apiKey = keychainManager.apiKey else { return nil }
         
         var request = URLRequest(url: url)

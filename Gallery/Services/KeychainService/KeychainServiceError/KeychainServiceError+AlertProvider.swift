@@ -18,8 +18,8 @@ extension KeychainServiceError: AlertProvider {
     
     private var setAPIKeyAction: Alert.Action {
         Alert.Action(text: "Set the key") {
-            let applicationCoordinator: ApplicationCoordinator? = ServiceLocator.shared.resolve()
-            applicationCoordinator?.navigateToSettings()
+            @Injected var applicationNavigator: (any ApplicationNavigator)?
+            applicationNavigator?.navigateToSettings()
         }
     }
 }
