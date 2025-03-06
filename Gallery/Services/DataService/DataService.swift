@@ -19,6 +19,11 @@ final class DataService: DataServiceProtocol {
     private var currentFetchPage = 0
     
     // MARK: - Public
+    func getPhoto(for id: String) async -> (any PhotoProtocol)? {
+        guard let data = await networkService?.fetch(APIEndpoint.photo(id: id)),
+              let photo = try? JSONDecoder().decode(Photo.self, from: data) else { return nil }
+        return photo
+    }
     
     func getPhotos(for query: String?) async -> [any PhotoProtocol]? {
         if lastQuery != query {
@@ -26,7 +31,6 @@ final class DataService: DataServiceProtocol {
             currentFetchPage = 0
             photosIDs.removeAll()
         }
-        
         let photos: [Photo]?
         if let query {
             photos = await fetchPhotos(for: query)
@@ -55,12 +59,11 @@ final class DataService: DataServiceProtocol {
         return nil
     }
     
-    func downloadImage(for photo: Photo) async -> (any ImageBoxProtocol)? {
+    func downloadImage(for photo: any PhotoProtocol) async -> (any ImageBoxProtocol)? {
         return nil
     }
     
     // MARK: - Private
-    
     private func fetchPhotos() async -> [Photo]? {
         guard let data = await networkService?.fetch(APIEndpoint.photos(page: currentFetchPage, photosPerPage: Constants.photosFetchPageSize)) else { return nil }
         return try? JSONDecoder().decode([Photo].self, from: data)
