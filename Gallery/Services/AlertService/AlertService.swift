@@ -60,7 +60,7 @@ extension AlertService {
         let actions = alert.actions.map { [weak self, weak viewController] action in
             UIAlertAction(title: action.text, style: action.style) { _ in
                 action.action?()
-                viewController?.dismiss(animated: true) {
+                alertController.dismiss(animated: true) {
                     self?.isShowingAlert = false
                     self?.showNextAlertIfNeeded(on: viewController)
                 }
