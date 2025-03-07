@@ -20,7 +20,7 @@ final class PhotosListHelper {
     private var itemsInSections: [[Int]] = []
     
     // MARK: - Public
-    func update(with itemsCount: Int) {
+    func update(itemsCount: Int) {
         guard currentItemsCount != itemsCount else { return }
         _ = itemsInSections.popLast()
         while itemsCountLimit < itemsCount {
@@ -62,7 +62,7 @@ final class PhotosListHelper {
     private func forceUpdate() {
         let itemCount = currentItemsCount
         resetCache()
-        update(with: itemCount)
+        update(itemsCount: itemCount)
     }
     
     private func layoutSection(for sectionIndex: Int) -> NSCollectionLayoutSection {

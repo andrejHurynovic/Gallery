@@ -9,17 +9,26 @@ import UIKit
 import Combine
 
 final class PhotosListViewController: UIViewController {
-    private let viewModel = PhotosListViewModel()
+    private let viewModel: PhotosListViewModel
     private let helper = PhotosListHelper()
     
     private var collectionView: UICollectionView!
     private var dataSource: DataSource!
+    private var previousItemsCount: Int = 0
     
     private var cancellables: Set<AnyCancellable> = []
     
     private let dummyView = UIView()
     private var previousSafeAreaWidth: CGFloat = -1
     private var safeAreaWidth: CGFloat { dummyView.bounds.width }
+    
+    // MARK: - Initialization
+    init(viewModel: PhotosListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -31,22 +40,38 @@ final class PhotosListViewController: UIViewController {
         addCancellables()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.startMonitor()
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateCollectionViewLayout()
     }
     
     private func update(itemsCount: Int) {
-        helper.update(with: itemsCount)
-        updateSnapshot()
+        helper.update(itemsCount: itemsCount)
+        if previousItemsCount > itemsCount {
+            updateSnapshot(force: true)
+            collectionView.reloadData()
+        } else {
+            updateSnapshot(force: false)
+        }
+        previousItemsCount = itemsCount
     }
     
     // MARK: - Setup
     private func addCancellables() {
-        viewModel.$photos
+        viewModel.photosUpdatesPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] photos in
-                self?.update(itemsCount: photos.count)
+            .sink { [weak self] (indexes, count) in
+                if let count = count {
+                    self?.update(itemsCount: count)
+                }
+                if let indexes {
+                    self?.reloadItems(indexes)
+                }
             }
             .store(in: &cancellables)
     }
@@ -92,7 +117,7 @@ final class PhotosListViewController: UIViewController {
         previousSafeAreaWidth = safeAreaWidth
         let newLayout = helper.collectionViewLayout(for: requirements)
         
-        updateSnapshot()
+        updateSnapshot(force: true)
         collectionView.setCollectionViewLayout(newLayout, animated: true)
     }
 }
@@ -117,21 +142,35 @@ private extension PhotosListViewController {
     
     func cellProvider(collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: Int) -> UICollectionViewCell? {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoViewCell.defaultReuseIdentifier,
-                                                            for: indexPath) as? PhotoViewCell else {
+                                                            for: indexPath) as? PhotoViewCell,
+              let photo = viewModel.photo(for: itemIdentifier) else {
             return UICollectionViewCell()
         }
         
-        viewModel.shouldRequestMoreContent(for: itemIdentifier)
+        viewModel.fetchMoreContentIfNeeded(for: itemIdentifier)
         
-        let photo = viewModel.photos[itemIdentifier]
         cell.update(with: photo)
         
         return cell
     }
     
-    func updateSnapshot() {
-        var snapshot = Snapshot()
-        let indexesOfSections = helper.sectionIndexes
+    func updateSnapshot(force: Bool = false) {
+        let indexesOfSections: [Int]
+        var snapshot: Snapshot
+        
+        if force {
+            snapshot = Snapshot()
+            indexesOfSections = helper.sectionIndexes
+        } else {
+            snapshot = dataSource.snapshot()
+            if let lastSectionIndex = snapshot.sectionIdentifiers.last {
+                let newItemsForLastSection = helper.itemIndexes(for: lastSectionIndex).filter {
+                    !snapshot.itemIdentifiers(inSection: lastSectionIndex).contains($0)
+                }
+                snapshot.appendItems(newItemsForLastSection, toSection: lastSectionIndex)
+            }
+            indexesOfSections = helper.sectionIndexes.filter { !snapshot.sectionIdentifiers.contains($0) }
+        }
         
         snapshot.appendSections(indexesOfSections)
         for sectionsIndex in indexesOfSections {
@@ -139,10 +178,10 @@ private extension PhotosListViewController {
         }
         dataSource.apply(snapshot, animatingDifferences: true)
     }
-     
-    func reloadItem(_ itemIdentifier: Int) {
-        var snapshot = dataSource.snapshot() 
-        snapshot.reloadItems([itemIdentifier])
+    
+    func reloadItems(_ itemIdentifiers: [Int]) {
+        var snapshot = dataSource.snapshot()
+        snapshot.reloadItems(itemIdentifiers)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 }
@@ -154,7 +193,7 @@ extension PhotosListViewController: UICollectionViewDelegate {
         let viewController = PhotoDetailViewController(viewModel: viewModel)
         
         present(viewController, animated: true)
-        viewController.update(with: viewModel.photos[itemIdentifier], index: itemIdentifier)
+        viewController.update(index: itemIdentifier)
         
         return true
     }
@@ -162,5 +201,5 @@ extension PhotosListViewController: UICollectionViewDelegate {
 
 @available(iOS 17.0, *)
 #Preview {
-    PhotosListViewController()
+    PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .all))
 }
