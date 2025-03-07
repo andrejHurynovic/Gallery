@@ -132,5 +132,10 @@ extension PhotoDetailViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    PhotoDetailViewController(viewModel: PhotosListViewModel())
+    PhotoDetailViewController(viewModel: PhotosListViewModel(dataSource: .all))
+}
+
+@available(iOS 17.0, *)
+#Preview {
+    PhotoDetailViewController(viewModel: PhotosListViewModel(dataSource: .favorite))
 }

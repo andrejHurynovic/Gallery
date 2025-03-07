@@ -9,15 +9,13 @@ import UIKit
 
 final class PhotoDetailViewController: UIViewController {
     private let viewModel: PhotosListViewModel
+    private var index: Int!
+    
+    private var lastImageViewWidth: CGFloat = 0.0
+    private var contentView = View()
     
     private var imageUpdateTask: Task<Void, Never>?
     private var photoUpdateTask: Task<Void, Never>?
-    
-    private var photo: (any PhotoProtocol)!
-    
-    private var contentView = View()
-    
-    private var lastImageViewWidth: CGFloat = 0.0
     
     // MARK: - Initialization
     init(viewModel: PhotosListViewModel) {
@@ -34,19 +32,22 @@ final class PhotoDetailViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateImage(with: photo)
+        updateImage()
     }
     
     // MARK: - Public
-    func update(with photo: any PhotoProtocol, index: Int) {
+    func update(index: Int) {
         contentView.updateImage(image: nil)
         imageUpdateTask?.cancel()
         photoUpdateTask?.cancel()
         
-        updatePhoto(with: photo)
-        updateImage(with: photo)
+        self.index = index
         
-        self.photo = photo
+        updatePhoto()
+        
+        guard let photo = viewModel.photo(for: index) else { return }
+        
+        updateImage(photo: photo)
         contentView.update(with: photo)
         
         setupActions(for: index)
@@ -62,10 +63,10 @@ final class PhotoDetailViewController: UIViewController {
 }
 
 private extension PhotoDetailViewController {
-    func updatePhoto(with photo: any PhotoProtocol) {
-        let identifier = photo.id
+    func updatePhoto() {
+        let index = index!
         photoUpdateTask = Task { [weak self] in
-            guard let photo = await self?.viewModel.getUpdatedPhoto(for: identifier),
+            guard let photo = await self?.viewModel.updatedPhoto(for: index),
                   Task.isCancelled == false else { return }
             await MainActor.run {
                 self?.contentView.update(with: photo)
@@ -73,7 +74,9 @@ private extension PhotoDetailViewController {
         }
     }
     
-    func updateImage(with photo: any PhotoProtocol) {
+    func updateImage(photo: (any PhotoProtocol)? = nil) {
+        guard let photo = photo ?? viewModel.photo(for: index) else { return }
+        
         let currentImageViewWidth = contentView.imageViewWidth()
         guard currentImageViewWidth != 0,
               lastImageViewWidth < currentImageViewWidth else { return }
