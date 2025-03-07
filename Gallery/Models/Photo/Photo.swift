@@ -16,7 +16,7 @@ final class Photo: PhotoProtocol {
     var height: Int
     var hexadecimalColorCode: String
     
-    var publishedDate: Date
+    var publicationDate: Date
     var descriptionText: String?
     var alternativeDescriptionText: String?
     
@@ -38,10 +38,10 @@ final class Photo: PhotoProtocol {
         height = try container.decode(Int.self, forKey: .height)
         hexadecimalColorCode = try container.decode(String.self, forKey: .color)
         
-        guard let publishedDate = ISO8601DateFormatter().date(from: try container.decode(String.self, forKey: .publishedDate)) else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [CodingKeys.publishedDate], debugDescription: "Cannot decode publishedDate"))
+        guard let publishedDate = ISO8601DateFormatter().date(from: try container.decode(String.self, forKey: .publicationDate)) else {
+            throw DecodingError.dataCorrupted(.init(codingPath: [CodingKeys.publicationDate], debugDescription: "Cannot decode publicationDate"))
         }
-        self.publishedDate = publishedDate
+        self.publicationDate = publishedDate
         descriptionText = try? container.decode(String?.self, forKey: .descriptionText)
         alternativeDescriptionText = try container.decode(String?.self, forKey: .alternativeDescriptionText)
         

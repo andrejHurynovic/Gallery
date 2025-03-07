@@ -17,7 +17,7 @@ extension Photo {
         case height
         case color
         
-        case publishedDate = "created_at"
+        case publicationDate = "created_at"
         case descriptionText = "description"
         case alternativeDescriptionText = "alt_description"
         

@@ -16,7 +16,7 @@ protocol PhotoProtocol: Identifiable {
     var height: Int { get }
     var hexadecimalColorCode: String { get }
     
-    var publishedDate: Date { get }
+    var publicationDate: Date { get }
     var descriptionText: String? { get }
     var alternativeDescriptionText: String? { get }
     
