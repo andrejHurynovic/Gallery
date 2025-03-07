@@ -33,7 +33,12 @@ final class ApplicationCoordinator: Coordinator {
     
     // MARK: - Private
     private func navigateToPhotosListView() {
-        let viewController = PhotosListViewController()
+        let allViewController = PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .all))
+        let favoriteViewController = PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .favorite))
+        let viewController = DualPageViewController(leadingViewController: allViewController,
+                                                    trailingViewController: favoriteViewController,
+                                                    leadingText: "All",
+                                                    trailingText: "Favorite")
         navigationController.pushViewController(viewController, animated: false)
     }
 }

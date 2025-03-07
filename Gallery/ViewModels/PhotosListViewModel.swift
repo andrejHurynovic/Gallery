@@ -9,56 +9,136 @@ import UIKit
 import Combine
 
 final class PhotosListViewModel {
-    @Injected var dataService: (any DataServiceProtocol)?
+    @Injected private var dataService: (any DataServiceProtocol)?
     
-    @Published var photos: [any PhotoProtocol] = []
-    var awaitingMoreContent: Bool = false
+    private var photos: [any PhotoProtocol] = []
+    var photosUpdatesPublisher = PassthroughSubject<(indexes: [Int]?, count: Int?), Never>()
+    
+    private var dataSource: DataSource
+    
+    private var awaitingForContent: Bool = false
+    private var nothingToFetch: Bool = false
+    private var targetElementsCount = Constants.photosFetchPageSize
+    
+    private var cancellable: AnyCancellable?
     
     // MARK: - Initialization
-    init() {
-        requestMoreContent()
+    init(dataSource: DataSource) {
+        self.dataSource = dataSource
     }
     
     // MARK: - Public
-    func shouldRequestMoreContent(for itemIndex: Int) {
-        guard !awaitingMoreContent,
-              photos.count - itemIndex < Constants.imageFetchThreshold else { return }
-        requestMoreContent()
+    
+    func startMonitor() {
+        addPhotosUpdateSubscription()
+        fetchMoreContentIfNeeded()
     }
     
-    func toggleFavorite(for itemIndex: Int) {
-        photos[itemIndex].isFavorite.toggle()
-    }
-    func downloadImage(for itemIndex: Int) {
-        
+    func fetchMoreContentIfNeeded(for itemIndex: Int? = nil) {
+        if let itemIndex {
+            targetElementsCount = max(targetElementsCount, itemIndex + Constants.imageFetchThreshold)
+        }
+        guard !nothingToFetch,
+              !awaitingForContent,
+              photos.count < targetElementsCount else { return }
+        fetchMoreContent()
     }
     
-    func getUpdatedPhoto(for id: String) async -> (any PhotoProtocol)? {
-        guard var photo = await dataService?.getPhoto(for: id),
-              let index = photos.firstIndex(where: { $0.id == id }) else { return nil }
-        photo.isFavorite = photos[index].isFavorite
-        photos[index] = photo
-        return photo
+    func photo(for index: Int) -> (any PhotoProtocol)? {
+        guard index < photos.count else { return nil }
+        return photos[index]
     }
+    
     func getImage(for requirements: any ImageRequirementsProtocol) async -> (any ImageBoxProtocol)? {
         guard let image = await dataService?.scaledImage(for: requirements) else { return nil }
         return image
     }
     
-    // MARK: - Private
-    private func requestMoreContent() {
-        awaitingMoreContent = true
-        
-        Task { [weak self] in
-            guard let dataService = self?.dataService,
-                  let photos = await dataService.getPhotos(for: nil) else {
-                self?.awaitingMoreContent = false
-                return
-            }
-            
-            self?.photos.append(contentsOf: photos)
-            self?.awaitingMoreContent = false
+    func downloadImage(for index: Int) {
+        guard index < photos.count else { return }
+        let photo = photos[index]
+        Task {
+            guard let imageBox = await dataService?.downloadImage(for: photo),
+                  let image = imageBox.image as? UIImage else { return }
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
         }
     }
     
+    func updatedPhoto(for index: Int) async -> (any PhotoProtocol)? {
+        guard index < photos.count else { return nil }
+        let photo = photos[index]
+        guard let updatedPhoto = await dataService?.getPhoto(for: photo.id) else { return nil }
+        photo.updateWith(photo: updatedPhoto)
+        return photo
+    }
+    
+    func toggleFavorite(for index: Int) {
+        guard index < photos.count else { return }
+        let photo = self.photos[index]
+        Task { [weak dataService] in
+            await dataService?.changePersistenceStatus(for: photo, isFavorite: !photo.isFavorite)
+        }
+    }
+    
+    // MARK: - Private
+    private func addPhotosUpdateSubscription() {
+        Task {
+            cancellable = await dataService?.photosUpdatePublisher
+                .sink { [weak self] in
+                    self?.replacePhoto(photo: $0)
+                }
+        }
+    }
+    
+    private func replacePhoto(photo: any PhotoProtocol) {
+        if let index = photos.firstIndex(where: { $0.id == photo.id }) {
+            foundIndex(index)
+        } else if dataSource == .favorite {
+            photos.append(photo)
+            photosUpdatesPublisher.send((indexes: nil, count: photos.count))
+        }
+        
+        func foundIndex(_ index: Int) {
+            switch dataSource {
+            case .all:
+                photos[index] = photo
+                photosUpdatesPublisher.send((indexes: [index], count: nil))
+            case .favorite:
+                if photo.isFavorite {
+                    photos[index] = photo
+                    photosUpdatesPublisher.send((indexes: [index], count: nil))
+                } else {
+                    photos.remove(at: index)
+                    photosUpdatesPublisher.send((indexes: nil, count: photos.count))
+                }
+            }
+        }
+    }
+    
+    private func fetchMoreContent() {
+        Task { [weak self] in
+            defer { self?.awaitingForContent = false }
+            
+            self?.awaitingForContent = true
+            
+            let fetchedPhotos: [any PhotoProtocol]?
+            guard let dataSource = self?.dataSource else { return }
+            switch dataSource {
+            case .all:
+                fetchedPhotos = await self?.dataService?.getPhotos(for: nil)
+            case .favorite:
+                guard let fetchedFavoritePhotos = await self?.dataService?.getFavoritePhotos() else {
+                    self?.nothingToFetch = true
+                    return
+                }
+                fetchedPhotos = fetchedFavoritePhotos
+            }
+            
+            guard let fetchedPhotos else { return }
+            self?.photos.append(contentsOf: fetchedPhotos)
+            self?.photosUpdatesPublisher.send((indexes: nil, count: self?.photos.count))
+            
+            self?.fetchMoreContentIfNeeded()
+        }
+    }
 }
