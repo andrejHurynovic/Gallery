@@ -12,7 +12,8 @@ final class PhotosListViewModel {
     @Injected private var dataService: (any DataServiceProtocol)?
     
     private var photos: [any PhotoProtocol] = []
-    var photosUpdatesPublisher = PassthroughSubject<(indexes: [Int]?, count: Int?), Never>()
+    var photosCount: Int { photos.count }
+    var photosUpdatesPublisher = PassthroughSubject<(indexes: [Int]?, count: Int?, removedIndex: Int?), Never>()
     
     private var dataSource: DataSource
     
@@ -45,6 +46,7 @@ final class PhotosListViewModel {
     }
     
     func photo(for index: Int) -> (any PhotoProtocol)? {
+        fetchMoreContentIfNeeded(for: index)
         guard index < photos.count else { return nil }
         return photos[index]
     }
@@ -95,21 +97,21 @@ final class PhotosListViewModel {
             foundIndex(index)
         } else if dataSource == .favorite {
             photos.append(photo)
-            photosUpdatesPublisher.send((indexes: nil, count: photos.count))
+            photosUpdatesPublisher.send((indexes: nil, count: photos.count, removedIndex: nil))
         }
         
         func foundIndex(_ index: Int) {
             switch dataSource {
             case .all:
                 photos[index] = photo
-                photosUpdatesPublisher.send((indexes: [index], count: nil))
+                photosUpdatesPublisher.send((indexes: [index], count: nil, removedIndex: nil))
             case .favorite:
                 if photo.isFavorite {
                     photos[index] = photo
-                    photosUpdatesPublisher.send((indexes: [index], count: nil))
+                    photosUpdatesPublisher.send((indexes: [index], count: nil, removedIndex: nil))
                 } else {
                     photos.remove(at: index)
-                    photosUpdatesPublisher.send((indexes: nil, count: photos.count))
+                    photosUpdatesPublisher.send((indexes: nil, count: photos.count, removedIndex: index))
                 }
             }
         }
@@ -136,7 +138,7 @@ final class PhotosListViewModel {
             
             guard let fetchedPhotos else { return }
             self?.photos.append(contentsOf: fetchedPhotos)
-            self?.photosUpdatesPublisher.send((indexes: nil, count: self?.photos.count))
+            self?.photosUpdatesPublisher.send((indexes: nil, count: self?.photos.count, removedIndex: nil))
             
             self?.fetchMoreContentIfNeeded()
         }
