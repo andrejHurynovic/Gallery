@@ -10,7 +10,7 @@ import Foundation
 final class Photo: PhotoProtocol {
     var id: String
     
-    var isPersistent: Bool = false
+    var isPersistent: Bool { return false }
     
     var width: Int32
     var height: Int32

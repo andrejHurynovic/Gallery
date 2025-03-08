@@ -10,7 +10,7 @@ import Foundation
 protocol PhotoProtocol: Identifiable {
     var id: String { get }
     
-    var isPersistent: Bool { get set }
+    var isPersistent: Bool { get }
     
     var width: Int32 { get }
     var height: Int32 { get }
