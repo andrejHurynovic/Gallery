@@ -197,9 +197,7 @@ extension PhotosListViewController: UICollectionViewDelegate {
         let viewController = PhotoDetailPagesViewController(initialIndex: itemIdentifier, viewModel: viewModel)
         
         photoDetailPagesViewController = viewController
-        photoDetailPagesViewController?.modalPresentationStyle = .overFullScreen
-        
-        present(viewController, animated: true)
+        present(UINavigationController(rootViewController: viewController), animated: true)
         return true
     }
 }

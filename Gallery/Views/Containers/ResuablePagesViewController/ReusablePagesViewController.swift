@@ -126,19 +126,3 @@ class ReusablePagesViewController<T: ReusablePageViewController>: UIPageViewCont
 
 @available(iOS 17.0, *)
 #Preview { ReusablePagesViewController(initialIndex: 3) }
-
-final class PhotoDetailPagesViewController: ReusablePagesViewController<PhotoDetailViewController> {
-    var viewModel: PhotosListViewModel
-    override var dataCount: Int { viewModel.photosCount }
-    
-    init(initialIndex: Int, viewModel: PhotosListViewModel) {
-        self.viewModel = viewModel
-        super.init(initialIndex: initialIndex)
-    }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
-    override func createReusableViewController() -> PhotoDetailViewController {
-        PhotoDetailViewController(viewModel: viewModel)
-    }
-}
