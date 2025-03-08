@@ -22,6 +22,8 @@ final class PhotosListViewController: UIViewController {
     private var previousSafeAreaWidth: CGFloat = -1
     private var safeAreaWidth: CGFloat { dummyView.bounds.width }
     
+    private weak var photoDetailPagesViewController: PhotoDetailPagesViewController?
+    
     // MARK: - Initialization
     init(viewModel: PhotosListViewModel) {
         self.viewModel = viewModel
@@ -53,6 +55,7 @@ final class PhotosListViewController: UIViewController {
     private func update(itemsCount: Int) {
         helper.update(itemsCount: itemsCount)
         if previousItemsCount > itemsCount {
+            helper.update(itemsCount: itemsCount)
             updateSnapshot(force: true)
             collectionView.reloadData()
         } else {
@@ -65,7 +68,10 @@ final class PhotosListViewController: UIViewController {
     private func addCancellables() {
         viewModel.photosUpdatesPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] (indexes, count) in
+            .sink { [weak self] (indexes, count, removedIndex) in
+                if let removedIndex {
+                    self?.photoDetailPagesViewController?.remove(index: removedIndex)
+                }
                 if let count = count {
                     self?.update(itemsCount: count)
                 }
@@ -147,8 +153,6 @@ private extension PhotosListViewController {
             return UICollectionViewCell()
         }
         
-        viewModel.fetchMoreContentIfNeeded(for: itemIdentifier)
-        
         cell.update(with: photo)
         
         return cell
@@ -190,11 +194,12 @@ private extension PhotosListViewController {
 extension PhotosListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         let itemIdentifier = helper.identifier(for: indexPath)
-        let viewController = PhotoDetailViewController(viewModel: viewModel)
+        let viewController = PhotoDetailPagesViewController(initialIndex: itemIdentifier, viewModel: viewModel)
+        
+        photoDetailPagesViewController = viewController
+        photoDetailPagesViewController?.modalPresentationStyle = .overFullScreen
         
         present(viewController, animated: true)
-        viewController.update(index: itemIdentifier)
-        
         return true
     }
 }
