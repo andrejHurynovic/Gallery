@@ -31,7 +31,7 @@ extension PhotoDetailViewController.View {
         }
         
         // MARK: - Public
-        func update(views: Int?, downloads: Int?, likes: Int) {
+        func update(views: Int32?, downloads: Int32?, likes: Int32) {
             viewsLabel.text = views.map(String.init)
             downloadsLabel.text = downloads.map(String.init)
             likesLabel.text = String(likes)

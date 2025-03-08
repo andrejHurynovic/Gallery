@@ -12,17 +12,17 @@ protocol PhotoProtocol: Identifiable {
     
     var isPersistent: Bool { get set }
     
-    var width: Int { get }
-    var height: Int { get }
+    var width: Int32 { get }
+    var height: Int32 { get }
     var hexadecimalColorCode: String { get }
     
     var publicationDate: Date { get }
     var descriptionText: String? { get }
     var alternativeDescriptionText: String? { get }
     
-    var views: Int? { get }
-    var likes: Int { get }
-    var downloads: Int? { get }
+    var views: Int32? { get }
+    var likes: Int32 { get }
+    var downloads: Int32? { get }
     
     var imageURL: String { get }
     var downloadURL: String { get }

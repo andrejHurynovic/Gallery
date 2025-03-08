@@ -12,17 +12,17 @@ final class Photo: PhotoProtocol {
     
     var isPersistent: Bool = false
     
-    var width: Int
-    var height: Int
+    var width: Int32
+    var height: Int32
     var hexadecimalColorCode: String
     
     var publicationDate: Date
     var descriptionText: String?
     var alternativeDescriptionText: String?
     
-    var views: Int?
-    var likes: Int
-    var downloads: Int?
+    var views: Int32?
+    var likes: Int32
+    var downloads: Int32?
     
     var imageURL: String
     var downloadURL: String
@@ -32,8 +32,8 @@ final class Photo: PhotoProtocol {
         
         id = try container.decode(String.self, forKey: .id)
         
-        width = try container.decode(Int.self, forKey: .width)
-        height = try container.decode(Int.self, forKey: .height)
+        width = try container.decode(Int32.self, forKey: .width)
+        height = try container.decode(Int32.self, forKey: .height)
         hexadecimalColorCode = try container.decode(String.self, forKey: .color)
         
         guard let publishedDate = ISO8601DateFormatter().date(from: try container.decode(String.self, forKey: .publicationDate)) else {
@@ -43,9 +43,9 @@ final class Photo: PhotoProtocol {
         descriptionText = try? container.decode(String?.self, forKey: .descriptionText)
         alternativeDescriptionText = try container.decode(String?.self, forKey: .alternativeDescriptionText)
         
-        views = try? container.decode(Int.self, forKey: .views)
-        likes = try container.decode(Int.self, forKey: .likes)
-        downloads = try? container.decode(Int.self, forKey: .downloads)
+        views = try? container.decode(Int32.self, forKey: .views)
+        likes = try container.decode(Int32.self, forKey: .likes)
+        downloads = try? container.decode(Int32.self, forKey: .downloads)
         
         let urlsContainer = try container.nestedContainer(keyedBy: URLsContainerCodingKeys.self, forKey: .urlsContainer)
         imageURL = try urlsContainer.decode(String.self, forKey: .raw)
