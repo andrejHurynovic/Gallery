@@ -68,7 +68,7 @@ final class PhotoViewCell: UICollectionViewCell {
     // MARK: - Public
     func update(with photo: any PhotoProtocol) {
         backgroundColor = UIColor(hexadecimalColorCode: photo.hexadecimalColorCode)
-        favoriteIconImageView.image = UIImage(resource: photo.isFavorite ? .favoriteFilled : .favorite).withTintColor(.white)
+        favoriteIconImageView.image = UIImage(resource: photo.isPersistent ? .favoriteFilled : .favorite).withTintColor(.white)
         addImageUpdateTask(with: photo)
     }
     

@@ -78,7 +78,7 @@ final class PhotosListViewModel {
         guard index < photos.count else { return }
         let photo = self.photos[index]
         Task { [weak dataService] in
-            await dataService?.changePersistenceStatus(for: photo, isFavorite: !photo.isFavorite)
+            await dataService?.changePersistenceStatus(for: photo, isPersistent: !photo.isPersistent)
         }
     }
     
@@ -106,7 +106,7 @@ final class PhotosListViewModel {
                 photos[index] = photo
                 photosUpdatesPublisher.send((indexes: [index], count: nil, removedIndex: nil))
             case .favorite:
-                if photo.isFavorite {
+                if photo.isPersistent {
                     photos[index] = photo
                     photosUpdatesPublisher.send((indexes: [index], count: nil, removedIndex: nil))
                 } else {

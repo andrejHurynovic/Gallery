@@ -93,7 +93,7 @@ extension PhotoDetailViewController {
         func update(with photo: any PhotoProtocol) {
             updateImageView(with: photo)
             
-            actionsStackView.update(creationDate: photo.publicationDate, isFavorite: photo.isFavorite)
+            actionsStackView.update(creationDate: photo.publicationDate, isFavorite: photo.isPersistent)
             infoStackView.update(views: photo.views, downloads: photo.downloads, likes: photo.likes)
             titleLabel.text = photo.alternativeDescriptionText
             descriptionLabel.text = photo.descriptionText

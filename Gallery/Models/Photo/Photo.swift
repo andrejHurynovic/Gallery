@@ -10,7 +10,7 @@ import Foundation
 final class Photo: PhotoProtocol {
     var id: String
     
-    var isFavorite: Bool = false
+    var isPersistent: Bool = false
     
     var width: Int
     var height: Int

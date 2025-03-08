@@ -19,5 +19,5 @@ protocol DataServiceProtocol: Actor {
     func rawImage(for photo: any PhotoProtocol) async -> (any ImageBoxProtocol)?
     func downloadImage(for photo: any PhotoProtocol) async -> (any ImageBoxProtocol)?
     
-    func changePersistenceStatus(for photo: any PhotoProtocol, isFavorite: Bool) async
+    func changePersistenceStatus(for photo: any PhotoProtocol, isPersistent: Bool) async
 }
