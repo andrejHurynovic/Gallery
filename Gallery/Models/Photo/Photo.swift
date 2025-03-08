@@ -24,8 +24,6 @@ final class Photo: PhotoProtocol {
     var likes: Int
     var downloads: Int?
     
-    var location: Location?
-    
     var imageURL: String
     var downloadURL: String
     
@@ -48,8 +46,6 @@ final class Photo: PhotoProtocol {
         views = try? container.decode(Int.self, forKey: .views)
         likes = try container.decode(Int.self, forKey: .likes)
         downloads = try? container.decode(Int.self, forKey: .downloads)
-        
-        location = try? container.decode(Location.self, forKey: .location)
         
         let urlsContainer = try container.nestedContainer(keyedBy: URLsContainerCodingKeys.self, forKey: .urlsContainer)
         imageURL = try urlsContainer.decode(String.self, forKey: .raw)

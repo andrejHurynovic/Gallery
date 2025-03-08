@@ -24,8 +24,6 @@ protocol PhotoProtocol: Identifiable {
     var likes: Int { get }
     var downloads: Int? { get }
     
-    var location: Location? { get }
-    
     var imageURL: String { get }
     var downloadURL: String { get }
     
