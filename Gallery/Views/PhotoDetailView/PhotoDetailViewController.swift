@@ -7,9 +7,8 @@
 
 import UIKit
 
-final class PhotoDetailViewController: UIViewController {
+final class PhotoDetailViewController: ReusablePageViewController {
     private let viewModel: PhotosListViewModel
-    private var index: Int!
     
     private var lastImageViewWidth: CGFloat = 0.0
     private var contentView = View()
@@ -36,13 +35,12 @@ final class PhotoDetailViewController: UIViewController {
     }
     
     // MARK: - Public
-    func update(index: Int) {
-        contentView.updateImage(image: nil)
-        imageUpdateTask?.cancel()
-        photoUpdateTask?.cancel()
-        
+    override func update(index: Int) {
+        prepareForReuse()
+        super.update(index: index)
         self.index = index
         
+        contentView.updateImage(image: nil)
         updatePhoto()
         
         guard let photo = viewModel.photo(for: index) else { return }
@@ -59,6 +57,11 @@ final class PhotoDetailViewController: UIViewController {
         let downloadButtonAction: () -> Void = { [weak self] in self?.viewModel.downloadImage(for: index) }
         contentView.updateActions(favoriteButtonAction: favoriteButtonAction,
                                   downloadButtonAction: downloadButtonAction)
+    }
+    private func prepareForReuse() {
+        lastImageViewWidth = 0.0
+        imageUpdateTask?.cancel()
+        photoUpdateTask?.cancel()
     }
 }
 
