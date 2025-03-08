@@ -21,8 +21,18 @@ final class PhotosListHelper {
     
     // MARK: - Public
     func update(itemsCount: Int) {
-        guard currentItemsCount != itemsCount else { return }
-        _ = itemsInSections.popLast()
+        guard itemsCount != currentItemsCount else { return }
+        if itemsCount > currentItemsCount {
+            _ = itemsInSections.popLast()
+        } else if itemsCount < currentItemsCount,
+                  let lastSectionItemLimit = sectionItemLimits.popLast() {
+            itemsCountLimit -= lastSectionItemLimit
+            _ = sectionIndexes.popLast()
+            if sectionOffsets.count > 1 {
+                _ = sectionOffsets.popLast()
+            }
+            _ = itemsInSections.popLast()
+        }
         while itemsCountLimit < itemsCount {
             let numberOfItemsInNewSection = layoutHelper.layoutSection(for: sectionItemLimits.count).numberOfItems
             itemsCountLimit += numberOfItemsInNewSection
@@ -57,7 +67,7 @@ final class PhotosListHelper {
     func identifier(for indexPath: IndexPath) -> Int {
         sectionOffset(for: indexPath.section) + indexPath.item
     }
-
+    
     // MARK: - Private
     private func forceUpdate() {
         let itemCount = currentItemsCount
