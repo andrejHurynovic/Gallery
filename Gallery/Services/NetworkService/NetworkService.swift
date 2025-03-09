@@ -11,7 +11,13 @@ import Network
 final class NetworkService: NetworkServiceProtocol {
     @Injected var alertService: (any AlertServiceProtocol)?
 
-    private let session = URLSession(configuration: .default)
+    private let session = {
+        let configuration = URLSessionConfiguration.default
+        // Ignoring cache to properly check persistence
+        configuration.requestCachePolicy = .reloadIgnoringCacheData
+        let session = URLSession(configuration: configuration)
+        return session
+    }()
     
     func fetch(_ endpoint: APIEndpointProtocol) async -> Data? {
         guard let request = endpoint.request else { return nil }
