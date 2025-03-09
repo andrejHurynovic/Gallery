@@ -51,8 +51,9 @@ final class PhotosListViewModel {
         return photos[index]
     }
     
-    func getImage(for requirements: any ImageRequirementsProtocol) async -> (any ImageBoxProtocol)? {
-        guard let image = await dataService?.scaledImage(for: requirements) else { return nil }
+    func getImage(for index: Int, with size: CGSize) async -> (any ImageBoxProtocol)? {
+        guard index < photos.count else { return nil }
+        guard let image = await dataService?.scaledImage(for: photos[index], with: size) else { return nil }
         return image
     }
     
@@ -66,12 +67,10 @@ final class PhotosListViewModel {
         }
     }
     
-    func updatedPhoto(for index: Int) async -> (any PhotoProtocol)? {
-        guard index < photos.count else { return nil }
+    func updatePhoto(for index: Int) async {
+        guard index < photos.count else { return }
         let photo = photos[index]
-        guard let updatedPhoto = await dataService?.getPhoto(for: photo.id) else { return nil }
-        photo.updateWith(photo: updatedPhoto)
-        return photo
+        await dataService?.updatePhoto(photo: photo)
     }
     
     func toggleFavorite(for index: Int) {
@@ -96,8 +95,8 @@ final class PhotosListViewModel {
         if let index = photos.firstIndex(where: { $0.id == photo.id }) {
             foundIndex(index)
         } else if dataSource == .favorite {
-            photos.append(photo)
-            photosUpdatesPublisher.send((indexes: nil, count: photos.count, removedIndex: nil))
+            photos.insert(photo, at: 0)
+            photosUpdatesPublisher.send((indexes: [0], count: photos.count, removedIndex: nil))
         }
         
         func foundIndex(_ index: Int) {
