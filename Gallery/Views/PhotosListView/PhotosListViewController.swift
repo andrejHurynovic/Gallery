@@ -22,7 +22,7 @@ final class PhotosListViewController: UIViewController {
     private var previousSafeAreaWidth: CGFloat = -1
     private var safeAreaWidth: CGFloat { dummyView.bounds.width }
     
-    private var visibleSections: [Int] { collectionView.indexPathsForVisibleItems.map { $0.section } }
+    private var visibleSections: [Int] { Array(Set(collectionView.indexPathsForVisibleItems.map({ $0.section }))) }
     
     private weak var photoDetailPagesViewController: PhotoDetailPagesViewController?
     
