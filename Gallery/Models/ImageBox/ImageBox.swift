@@ -19,6 +19,6 @@ final class ImageBox: ImageBoxProtocol {
     private(set) var image: UIImage
     
     func meet(requirements: any ImageRequirementsProtocol) -> Bool {
-        return width >= requirements.requiredWidth && height >= requirements.requiredHeight
+        return width >= requirements.width && height >= requirements.height
     }
 }

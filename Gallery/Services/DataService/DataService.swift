@@ -121,13 +121,13 @@ extension DataService {
     }
     
     func rawImage(for photo: any PhotoProtocol) async -> (any ImageBoxProtocol)? {
-        let requirements = ImageRequirements(id: photo.id,
-                                             imageURL: photo.imageURL,
-                                             requiredWidth: CGFloat(photo.width),
-                                             requiredHeight: CGFloat(photo.height))
         guard let imageBox = await fetchImageBox(for: APIEndpoint.imageWithRequirements(requirements)) else { return nil }
         imageCacheService?.addImage(id: requirements.id, imageBox)
         return imageBox
+        let requirements = ImageRequirements(from: photo,
+                                             width: CGFloat(photo.width),
+                                             height: CGFloat(photo.height))
+        return await fetchImage(for: photo, with: requirements)
     }
     
     func downloadImage(for photo: any PhotoProtocol) async -> (any ImageBoxProtocol)? {

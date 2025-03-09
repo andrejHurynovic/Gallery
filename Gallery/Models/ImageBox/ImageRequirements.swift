@@ -11,14 +11,17 @@ struct ImageRequirements: ImageRequirementsProtocol {
     private(set) var id: String
     private(set) var imageURL: String
     
-    private(set) var requiredWidth: Int
-    private(set) var requiredHeight: Int
+    private(set) var width: Int
+    private(set) var height: Int
     
-    init(id: String, imageURL: String, requiredWidth: CGFloat, requiredHeight: CGFloat) {
-        self.id = id
-        self.imageURL = imageURL
-        
-        self.requiredWidth = Int(requiredWidth * Constants.screenScale)
-        self.requiredHeight = Int(requiredHeight * Constants.screenScale)
+    init(from post: any PhotoProtocol, width: CGFloat, height: CGFloat) {
+        id = post.id
+        imageURL = post.imageURL
+        self.width = Int(width * Constants.screenScale)
+        self.height = Int(height * Constants.screenScale)
+    }
+    
+    init(from post: any PhotoProtocol, with size: CGSize) {
+        self.init(from: post, width: size.width, height: size.height)
     }
 }

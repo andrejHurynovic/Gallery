@@ -9,6 +9,6 @@ protocol ImageRequirementsProtocol {
     var id: String { get }
     var imageURL: String { get }
     
-    var requiredWidth: Int { get }
-    var requiredHeight: Int { get }
+    var width: Int { get }
+    var height: Int { get }
 }

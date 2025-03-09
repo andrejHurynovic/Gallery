@@ -75,12 +75,12 @@ private extension APIEndpoint {
         guard var components = URLComponents(string: requirements.imageURL) else { return nil }
         
         // Use either width or height. If both parameters are specified, the image will be scaled based on the smaller one.
-        if requirements.requiredWidth > requirements.requiredHeight {
+        if requirements.width > requirements.height {
             components.queryItems?.append(URLQueryItem(name: APIEndpointConstants.widthQueryItem,
-                                                       value: String(requirements.requiredWidth)))
+                                                       value: String(requirements.width)))
         } else {
             components.queryItems?.append(URLQueryItem(name: APIEndpointConstants.heightQueryItem,
-                                                       value: String(requirements.requiredHeight)))
+                                                       value: String(requirements.height)))
         }
         
         return components.url
