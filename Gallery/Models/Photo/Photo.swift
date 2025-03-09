@@ -27,6 +27,36 @@ final class Photo: PhotoProtocol {
     var imageURL: String
     var downloadURL: String
     
+    // MARK: - Initialization
+    
+    init(id: String,
+         width: Int32,
+         height: Int32,
+         hexadecimalColorCode: String,
+         publicationDate: Date,
+         descriptionText: String?,
+         alternativeDescriptionText: String?,
+         views: Int32?,
+         likes: Int32,
+         downloads: Int32?,
+         imageURL: String,
+         downloadURL: String) {
+        self.id = id
+        self.width = width
+        self.height = height
+        self.hexadecimalColorCode = hexadecimalColorCode
+        self.publicationDate = publicationDate
+        self.descriptionText = descriptionText
+        self.alternativeDescriptionText = alternativeDescriptionText
+        self.views = views
+        self.likes = likes
+        self.downloads = downloads
+        self.imageURL = imageURL
+        self.downloadURL = downloadURL
+    }
+    
+    // MARK: - Decoder
+    
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
