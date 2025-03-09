@@ -16,13 +16,21 @@ final class PhotosListViewController: UIViewController {
     private var dataSource: DataSource!
     private var previousItemsCount: Int = 0
     
+    private var visibleSections: [Int] { Array(Set(collectionView.indexPathsForVisibleItems.map({ $0.section }))) }
+    
     private var cancellables: Set<AnyCancellable> = []
     
     private let dummyView = UIView()
     private var previousSafeAreaWidth: CGFloat = -1
     private var safeAreaWidth: CGFloat { dummyView.bounds.width }
     
-    private var visibleSections: [Int] { Array(Set(collectionView.indexPathsForVisibleItems.map({ $0.section }))) }
+    private var isBackButtonVisible = true
+    private var backButtonTrailingConstraint: NSLayoutConstraint!
+    private lazy var backButton = {
+        let button = ImageButton(image: UIImage(resource: .chevronUp), action: { [weak self] in self?.scrollToTop() })
+        let buttonContainer = RoundedContainerView(content: button, cornerStyle: .circle)
+        return buttonContainer
+    }()
     
     private weak var photoDetailPagesViewController: PhotoDetailPagesViewController?
     
@@ -41,6 +49,7 @@ final class PhotosListViewController: UIViewController {
         previousSafeAreaWidth = safeAreaWidth
         configureCollectionView()
         addCollectionView()
+        addBackButton()
         addCancellables()
         viewModel.startMonitor()
     }
@@ -105,6 +114,45 @@ final class PhotosListViewController: UIViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             collectionView.topAnchor.constraint(equalTo: view.topAnchor)
         ])
+    }
+    
+    private func addBackButton() {
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(backButton)
+        
+        backButtonTrailingConstraint = backButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor)
+        updateBackButtonTrailingConstraint()
+        NSLayoutConstraint.activate([
+            backButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -Constants.UserInterface.horizontalSpacing / 2),
+            backButtonTrailingConstraint,
+            backButton.widthAnchor.constraint(equalToConstant: Constants.UserInterface.largeButtonSize),
+            backButton.heightAnchor.constraint(equalToConstant: Constants.UserInterface.largeButtonSize)
+        ])
+    }
+    
+    private func updateBackButtonTrailingConstraint() {
+        let isBackButtonVisible: Bool
+        if self.collectionView.contentOffset.y > self.view.bounds.height / 4 {
+            isBackButtonVisible = true
+        } else {
+            isBackButtonVisible = false
+        }
+        if self.isBackButtonVisible != isBackButtonVisible {
+            self.isBackButtonVisible = isBackButtonVisible
+            if isBackButtonVisible {
+                backButtonTrailingConstraint.constant = -Constants.UserInterface.horizontalSpacing / 2
+            } else {
+                backButtonTrailingConstraint.constant = 100
+            }
+            UIView.animate(withDuration: Constants.animationDuration) {
+                self.view.layoutIfNeeded()
+            }
+        }
+        
+    }
+    
+    private func scrollToTop() {
+        collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
     
     // Should be called before first createLayout call
@@ -224,6 +272,9 @@ extension PhotosListViewController: UICollectionViewDelegate {
         photoDetailPagesViewController = viewController
         present(UINavigationController(rootViewController: viewController), animated: true)
         return true
+    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        updateBackButtonTrailingConstraint()
     }
 }
 
