@@ -27,5 +27,5 @@ protocol PhotoProtocol: Identifiable {
     var imageURL: String { get }
     var downloadURL: String { get }
     
-    func updateWith(photo: any PhotoProtocol)
+    func update(from post: any PhotoProtocol)
 }
