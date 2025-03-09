@@ -172,7 +172,8 @@ private extension PhotosListViewController {
             return UICollectionViewCell()
         }
         
-        cell.update(with: photo)
+        cell.viewModel = viewModel
+        cell.update(with: photo, index: itemIdentifier)
         
         return cell
     }

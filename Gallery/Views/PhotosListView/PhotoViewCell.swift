@@ -8,7 +8,7 @@
 import UIKit
 
 final class PhotoViewCell: UICollectionViewCell {
-    @Injected var dataService: (any DataServiceProtocol)?
+    var viewModel: PhotosListViewModel!
     
     private let imageView = UIImageView()
     private let favoriteIconImageView = UIImageView()
@@ -66,17 +66,17 @@ final class PhotoViewCell: UICollectionViewCell {
     }
     
     // MARK: - Public
-    func update(with photo: any PhotoProtocol) {
+    func update(with photo: any PhotoProtocol, index: Int) {
         backgroundColor = UIColor(hexadecimalColorCode: photo.hexadecimalColorCode)
         favoriteIconImageView.image = UIImage(resource: photo.isPersistent ? .favoriteFilled : .favorite).withTintColor(.white)
-        addImageUpdateTask(with: photo)
+        addImageUpdateTask(for: index)
     }
     
     // MARK: - Private
-    private func addImageUpdateTask(with photo: any PhotoProtocol) {
+    private func addImageUpdateTask(for index: Int) {
         imageTask = Task {
             guard Task.isCancelled == false,
-                  let imageBox = await dataService?.scaledImage(for: requirements(for: photo)),
+                  let imageBox = await viewModel.getImage(for: index, with: bounds.size),
                   let image = imageBox.image as? UIImage else { return }
             await MainActor.run {
                 UIView.transition(with: self, duration: Constants.animationDuration,
@@ -85,12 +85,5 @@ final class PhotoViewCell: UICollectionViewCell {
                 }
             }
         }
-    }
-    
-    private func requirements(for photo: any PhotoProtocol) -> ImageRequirements {
-        ImageRequirements(id: photo.id,
-                          imageURL: photo.imageURL,
-                          requiredWidth: bounds.width,
-                          requiredHeight: bounds.height)
     }
 }

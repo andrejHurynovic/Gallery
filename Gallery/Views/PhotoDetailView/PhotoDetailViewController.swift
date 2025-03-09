@@ -79,19 +79,15 @@ private extension PhotoDetailViewController {
     }
     
     func updateImage(photo: (any PhotoProtocol)? = nil) {
-        guard let photo = photo ?? viewModel.photo(for: index) else { return }
+        let index = index!
         
         let currentImageViewWidth = contentView.imageViewWidth()
         guard currentImageViewWidth != 0,
               lastImageViewWidth < currentImageViewWidth else { return }
         lastImageViewWidth = currentImageViewWidth
         
-        let requirements = ImageRequirements(id: photo.id,
-                                             imageURL: photo.imageURL,
-                                             requiredWidth: currentImageViewWidth,
-                                             requiredHeight: 0)
         imageUpdateTask = Task { [weak self] in
-            guard let imageBox = await self?.viewModel.getImage(for: requirements),
+            guard let imageBox = await self?.viewModel.getImage(for: index, with: CGSize(width: currentImageViewWidth, height: 0)),
                   Task.isCancelled == false,
                   let image = imageBox.image as? UIImage else { return }
             await MainActor.run {
