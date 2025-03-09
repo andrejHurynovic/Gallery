@@ -9,6 +9,7 @@ import CoreData
 
 final actor DatabaseService: DatabaseServiceProtocol {
     @Injected private var alertService: (any AlertServiceProtocol)?
+    @Injected private var imageCacheService: (any ImageCacheServiceProtocol)?
     
     private var persistentContainer: NSPersistentContainer
     private lazy var mainContext: NSManagedObjectContext = persistentContainer.viewContext
@@ -54,13 +55,13 @@ extension DatabaseService {
         let context = backgroundContext
         do {
             let post = PersistentPost(from: post, in: context)
+            post.imageBox = imageCacheService?.popImage(id: post.id)
             try context.save()
             return try mainContext.existingObject(with: post.objectID) as? PersistentPost
         } catch {
             Task { [weak self] in
                 await self?.alertService?.showAlert(for: error)
             }
-            
         }
         return nil
     }
@@ -70,6 +71,9 @@ extension DatabaseService {
         postsIdsToObjectsIds.removeValue(forKey: post.id)
         do {
             guard let post = try context.existingObject(with: post.objectID) as? PersistentPost else { return }
+            if let imageBox = post.imageBox {
+                imageCacheService?.addImage(id: post.id, imageBox)
+            }
             context.delete(post)
             try context.save()
         } catch {

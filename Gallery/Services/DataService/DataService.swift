@@ -21,7 +21,7 @@ final actor DataService: DataServiceProtocol {
     private var photosIds: Set<String> = []
     private var persistentPostsIds: Set<String>?
     
-    private var lastFetchedFavoritePostDateOfInsertion: Date = Date()
+    private lazy var lastFetchedFavoritePostDateOfInsertion: Date = Date()
     
     var photosUpdatePublisher = PassthroughSubject<any PhotoProtocol, Never>()
 }
@@ -112,18 +112,39 @@ extension DataService {
 
 // MARK: - Images
 extension DataService {
-    func scaledImage(for requirements: any ImageRequirementsProtocol) async -> (any ImageBoxProtocol)? {
-        if let imageBox = imageCacheService?.getImage(requirements) { return imageBox }
+    func scaledImage(for photo: any PhotoProtocol, with size: CGSize) async -> (any ImageBoxProtocol)? {
+        let requirements = ImageRequirements(from: photo, with: size)
+        let imageBox = await fetchImage(for: photo, with: requirements)
         
-        guard let imageBox = await fetchImageBox(for: APIEndpoint.imageWithRequirements(requirements)) else { return nil }
-        imageCacheService?.addImage(id: requirements.id, imageBox)
         return imageBox
     }
     
+    private func fetchImage(for photo: any PhotoProtocol, with requirements: any ImageRequirementsProtocol) async -> (any ImageBoxProtocol)? {
+        if photo.isPersistent,
+           let persistentPost = photo as? PersistentPost,
+           let persistentImageBox = persistentPost.imageBox,
+           persistentImageBox.meet(requirements: requirements) {
+            return persistentImageBox
+        }
+        if let cachedImageBox = imageCacheService?.getImage(requirements) {
+            return cachedImageBox
+        }
+        
+        guard let downloadedImageBox = await fetchImageBox(for: APIEndpoint.imageWithRequirements(requirements)) else { return nil }
+        if photo.isPersistent,
+           let persistentPost = photo as? PersistentPost {
+            Task {
+                await databaseService?.update(post: persistentPost, action: {
+                    $0.imageBox = downloadedImageBox
+                })
+            }
+        } else {
+            imageCacheService?.addImage(id: requirements.id, downloadedImageBox)
+        }
+        return downloadedImageBox
+    }
+    
     func rawImage(for photo: any PhotoProtocol) async -> (any ImageBoxProtocol)? {
-        guard let imageBox = await fetchImageBox(for: APIEndpoint.imageWithRequirements(requirements)) else { return nil }
-        imageCacheService?.addImage(id: requirements.id, imageBox)
-        return imageBox
         let requirements = ImageRequirements(from: photo,
                                              width: CGFloat(photo.width),
                                              height: CGFloat(photo.height))
