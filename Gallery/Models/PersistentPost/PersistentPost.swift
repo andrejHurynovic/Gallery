@@ -6,6 +6,7 @@
 //
 
 import CoreData
+import UIKit
 
 @objc(PersistentPost)
 final class PersistentPost: NSManagedObject, Identifiable {
@@ -28,6 +29,8 @@ final class PersistentPost: NSManagedObject, Identifiable {
     
     @NSManaged var imageURL: String
     @NSManaged var downloadURL: String
+    
+    @NSManaged private var backingImage: Data?
 }
 
 // MARK: - Accessors
@@ -55,6 +58,15 @@ extension PersistentPost {
             willAccessValue(forKey: "backingDownloads")
             backingDownloads = unwrappedOptional(from: newValue)
             didAccessValue(forKey: "backingDownloads")
+        }
+    }
+    var imageBox: (any ImageBoxProtocol)? {
+        get {
+            guard let backingImage else { return nil }
+            return ImageBox(from: backingImage)
+        }
+        set {
+            backingImage = (newValue?.image as? UIImage)?.pngData()
         }
     }
 }
