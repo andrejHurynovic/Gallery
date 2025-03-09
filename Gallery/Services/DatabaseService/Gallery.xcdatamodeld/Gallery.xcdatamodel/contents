@@ -3,6 +3,7 @@
     <entity name="PersistentPost" representedClassName="PersistentPost" syncable="YES">
         <attribute name="alternativeDescriptionText" optional="YES" attributeType="String"/>
         <attribute name="backingDownloads" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="backingImage" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="backingViews" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="dateOfInsertion" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="descriptionText" optional="YES" attributeType="String"/>
