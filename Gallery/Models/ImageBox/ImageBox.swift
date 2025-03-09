@@ -11,12 +11,10 @@ final class ImageBox: ImageBoxProtocol {
     init?(from data: Data) {
         guard let image = UIImage(data: data) else { return nil }
         self.image = image
-        width = Int(image.size.width)
-        height = Int(image.size.height)
     }
     
-    private(set) var width: Int
-    private(set) var height: Int
+    var width: Int { Int(image.size.width) }
+    var height: Int { Int(image.size.height) }
     
     private(set) var image: UIImage
     
