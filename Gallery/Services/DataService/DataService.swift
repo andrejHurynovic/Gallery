@@ -11,25 +11,45 @@ import Combine
 final actor DataService: DataServiceProtocol {
     typealias ImageBoxType = ImageBox
     
-    @Injected var networkService: (any NetworkServiceProtocol)?
-    @Injected var imageCacheService: (any ImageCacheServiceProtocol)?
+    @Injected private var networkService: (any NetworkServiceProtocol)?
+    @Injected private var databaseService: (any DatabaseServiceProtocol)?
+    @Injected private var imageCacheService: (any ImageCacheServiceProtocol)?
     
     private var currentFetchPage = 1
     private var lastQuery: String?
-    private var photosIDs: Set<String> = []
     
-    private var temporaryFavoritePhotosProvided: Int = 0
-    private var temporaryFavoritePhotos: [any PhotoProtocol] = []
+    private var photosIds: Set<String> = []
+    private var persistentPostsIds: Set<String>?
+    
+    private var lastFetchedFavoritePostDateOfInsertion: Date = Date()
     
     var photosUpdatePublisher = PassthroughSubject<any PhotoProtocol, Never>()
 }
 
 // MARK: - Photos
 extension DataService {
-    func getPhoto(for id: String) async -> (any PhotoProtocol)? {
-        guard let data = await networkService?.fetch(APIEndpoint.photo(id: id)),
-              let photo = try? JSONDecoder().decode(Photo.self, from: data) else { return nil }
-        return photo
+    func updatePhoto(photo: any PhotoProtocol) async {
+        guard let data = await networkService?.fetch(APIEndpoint.photo(id: photo.id)),
+              let updatedPhoto = try? JSONDecoder().decode(Photo.self, from: data) else { return }
+        if photo.isPersistent,
+           let persistentPhoto = photo as? PersistentPost {
+            await databaseService?.update(post: persistentPhoto, action: { $0.update(from: updatedPhoto) })
+        } else {
+            photo.update(from: updatedPhoto)
+        }
+    }
+    
+    func changePersistenceStatus(for post: any PhotoProtocol, isPersistent: Bool) async {
+        if isPersistent {
+            guard let post = post as? Photo,
+                  let persistentPost = await databaseService?.insert(post: post) else { return }
+            photosUpdatePublisher.send(persistentPost)
+        } else {
+            guard let persistentPost = post as? PersistentPost else { return }
+            let post = Photo(from: persistentPost)
+            await databaseService?.delete(post: persistentPost)
+            photosUpdatePublisher.send(post)
+        }
     }
 }
 
@@ -39,40 +59,43 @@ extension DataService {
         if lastQuery != query {
             lastQuery = query
             currentFetchPage = 1
-            photosIDs.removeAll()
+            photosIds.removeAll()
         }
-        let photos: [Photo]?
+        let photos: [any PhotoProtocol]?
         if let query {
             photos = await fetchPhotos(for: query)
         } else {
             photos = await fetchPhotos()
         }
         guard var photos else { return nil }
-        photos.removeAll { photosIDs.contains($0.id) }
-        photosIDs.formUnion(photos.map { $0.id })
+        photos.removeAll { photosIds.contains($0.id) }
+        photosIds.formUnion(photos.map { $0.id })
+        
+        await replaceToPersistencePosts(posts: &photos)
         
         currentFetchPage += 1
         return photos
     }
     
-    func getFavoritePhotos() async -> [any PhotoProtocol]? {
-        guard temporaryFavoritePhotosProvided < temporaryFavoritePhotos.count else { return nil }
-        let bounds = temporaryFavoritePhotosProvided...(temporaryFavoritePhotosProvided+Constants.photosFetchPageSize)
-        let photos: [any PhotoProtocol].SubSequence
-        if bounds.upperBound > temporaryFavoritePhotos.count {
-            photos = (temporaryFavoritePhotos[temporaryFavoritePhotosProvided...])
-        } else {
-            photos = (temporaryFavoritePhotos[bounds])
+    private func replaceToPersistencePosts(posts: inout [any PhotoProtocol]) async {
+        if persistentPostsIds == nil {
+            persistentPostsIds = await databaseService?.getPostsIds()
         }
-        temporaryFavoritePhotosProvided += photos.count
-        return Array(photos)
+        var postsDictionary: [String: any PhotoProtocol] = Dictionary(uniqueKeysWithValues: posts.map({ ($0.id, $0) }))
+        let persistentPostsIds = persistentPostsIds!.intersection(postsDictionary.keys)
+        guard let persistentPosts = await databaseService?.fetchPosts(with: persistentPostsIds) else { return }
+        
+        for persistentPost in persistentPosts {
+            postsDictionary[persistentPost.id] = persistentPost
+        }
+        posts = Array(postsDictionary.values)
     }
     
-    func changePersistenceStatus(for photo: any PhotoProtocol, isFavorite: Bool) async {
-        var photo = photo
-        photo.isFavorite = isFavorite
-        temporaryFavoritePhotos.append(photo)
-        photosUpdatePublisher.send(photo)
+    func getFavoritePhotos() async -> [any PhotoProtocol]? {
+        guard let posts = await databaseService?.fetchPosts(after: lastFetchedFavoritePostDateOfInsertion),
+              let lastFavoritePoseDateOfInsertion = posts.last?.dateOfInsertion else { return nil }
+        self.lastFetchedFavoritePostDateOfInsertion = lastFavoritePoseDateOfInsertion
+        return Array(posts)
     }
     
     private func fetchPhotos() async -> [Photo]? {
