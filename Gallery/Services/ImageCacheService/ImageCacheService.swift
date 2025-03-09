@@ -20,6 +20,12 @@ final class ImageCacheService<ImageBoxType: ImageBoxProtocol>: ImageCacheService
         storage.setObject(imageBox, forKey: id as NSString)
     }
     
+    func popImage(id: String) -> (any ImageBoxProtocol)? {
+        guard let imageBox = storage.object(forKey: id as NSString) else { return nil }
+        storage.removeObject(forKey: id as NSString)
+        return imageBox
+    }
+    
     func getImage(_ requirements: any ImageRequirementsProtocol) -> (any ImageBoxProtocol)? {
         guard let imageBox = storage.object(forKey: requirements.id as NSString) else { return nil }
         guard imageBox.meet(requirements: requirements) else {
