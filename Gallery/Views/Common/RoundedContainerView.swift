@@ -8,9 +8,17 @@
 import UIKit
 
 final class RoundedContainerView: UIView {
-    init(content: UIView, color: UIColor = UIColor.quaternaryLabel, isFilled: Bool = false) {
+    var cornerStyle: CornerStyle
+    
+    // MARK: - Initialization
+    init(content: UIView,
+         cornerStyle: CornerStyle = .fixed(Constants.UserInterface.cornerRadius),
+         color: UIColor = UIColor.quaternaryLabel,
+         isFilled: Bool = false) {
+        self.cornerStyle = cornerStyle
         super.init(frame: .null)
-        layer.cornerRadius = Constants.UserInterface.cornerRadius
+        self.backgroundColor = .systemBackground
+        
         if isFilled {
             backgroundColor = color
         } else {
@@ -29,4 +37,23 @@ final class RoundedContainerView: UIView {
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    // MARK: - Lifecycle
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        switch cornerStyle {
+        case let .fixed(radius):
+            layer.cornerRadius = radius
+        case .circle:
+            layer.cornerRadius = bounds.width / 2
+        }
+    }
+}
+
+extension RoundedContainerView {
+    enum CornerStyle {
+        case fixed(CGFloat)
+        case circle
+    }
 }
