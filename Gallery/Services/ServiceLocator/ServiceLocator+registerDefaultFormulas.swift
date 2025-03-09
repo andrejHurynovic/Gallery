@@ -12,5 +12,6 @@ extension ServiceLocator {
         ServiceLocator.shared.register(AlertService() as AlertServiceProtocol)
         ServiceLocator.shared.register(DataService() as DataServiceProtocol)
         ServiceLocator.shared.register(NetworkService() as NetworkServiceProtocol)
+        ServiceLocator.shared.register(DatabaseService() as DatabaseServiceProtocol)
     }
 }
