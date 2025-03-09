@@ -22,6 +22,8 @@ final class PhotosListViewController: UIViewController {
     private var previousSafeAreaWidth: CGFloat = -1
     private var safeAreaWidth: CGFloat { dummyView.bounds.width }
     
+    private var visibleSections: [Int] { collectionView.indexPathsForVisibleItems.map { $0.section } }
+    
     private weak var photoDetailPagesViewController: PhotoDetailPagesViewController?
     
     // MARK: - Initialization
@@ -40,10 +42,6 @@ final class PhotosListViewController: UIViewController {
         configureCollectionView()
         addCollectionView()
         addCancellables()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         viewModel.startMonitor()
     }
     
@@ -72,7 +70,12 @@ final class PhotosListViewController: UIViewController {
                 if let removedIndex {
                     self?.photoDetailPagesViewController?.remove(index: removedIndex)
                 }
-                if let count = count {
+                if let count, indexes != nil {
+                    self?.update(itemsCount: count)
+                    self?.reloadSections(self!.visibleSections)
+                    return
+                }
+                if let count {
                     self?.update(itemsCount: count)
                 }
                 if let indexes {
@@ -93,6 +96,7 @@ final class PhotosListViewController: UIViewController {
     private func addCollectionView() {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.delegate = self
+        collectionView.showsVerticalScrollIndicator = false
         
         view.addSubview(collectionView)
         NSLayoutConstraint.activate([
@@ -183,9 +187,14 @@ private extension PhotosListViewController {
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     
-    func reloadItems(_ itemIdentifiers: [Int]) {
+    func reloadItems(_ itemsIdentifiers: [Int]) {
         var snapshot = dataSource.snapshot()
-        snapshot.reloadItems(itemIdentifiers)
+        snapshot.reloadItems(itemsIdentifiers)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    func reloadSections(_ sectionsIdentifiers: [Int]) {
+        var snapshot = dataSource.snapshot()
+        snapshot.reloadSections(sectionsIdentifiers)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 }

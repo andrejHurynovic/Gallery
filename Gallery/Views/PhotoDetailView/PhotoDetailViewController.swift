@@ -69,8 +69,9 @@ private extension PhotoDetailViewController {
     func updatePhoto() {
         let index = index!
         photoUpdateTask = Task { [weak self] in
-            guard let photo = await self?.viewModel.updatedPhoto(for: index),
-                  Task.isCancelled == false else { return }
+            await self?.viewModel.updatePhoto(for: index)
+            guard Task.isCancelled == false,
+            let photo = self?.viewModel.photo(for: index) else { return }
             await MainActor.run {
                 self?.contentView.update(with: photo)
             }
