@@ -12,8 +12,6 @@ protocol DataServiceProtocol: Actor {
     var photosUpdatePublisher: PassthroughSubject<any PhotoProtocol, Never> { get }
     
     func updatePhoto(photo: any PhotoProtocol) async
-    func changePersistenceStatus(for photo: any PhotoProtocol, isPersistent: Bool) async
-    
     // Adding "to" to the swiftlint exclude list for identifier_name does not work
     // swiftlint:disable identifier_name
     func changePersistenceStatus(for photo: any PhotoProtocol, to: Bool) async

@@ -39,7 +39,7 @@ extension DataService {
         }
     }
     
-    func changePersistenceStatus(for post: any PhotoProtocol, isPersistent: Bool) async {
+    func changePersistenceStatus(for post: any PhotoProtocol, to isPersistent: Bool) async {
         if isPersistent {
             guard let post = post as? Photo,
                   let persistentPost = await databaseService?.insert(post: post) else { return }

@@ -77,7 +77,7 @@ final class PhotosListViewModel {
         guard index < photos.count else { return }
         let photo = self.photos[index]
         Task { [weak dataService] in
-            await dataService?.changePersistenceStatus(for: photo, isPersistent: !photo.isPersistent)
+            await dataService?.changePersistenceStatus(for: photo, to: !photo.isPersistent)
         }
     }
     
