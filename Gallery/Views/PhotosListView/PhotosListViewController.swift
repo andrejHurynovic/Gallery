@@ -150,6 +150,21 @@ private extension PhotosListViewController {
         return DataSource(collectionView: collectionView, cellProvider: cellProvider)
     }
     
+    private var cellProvider: (_ collectionView: UICollectionView, _ indexPath: IndexPath, _ itemIdentifier: ItemIdentifierType) -> UICollectionViewCell? {
+        { [weak self] collectionView, indexPath, itemIdentifier in
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoViewCell.defaultReuseIdentifier,
+                                                                for: indexPath) as? PhotoViewCell,
+                  let photo = self?.viewModel.photo(for: itemIdentifier) else {
+                return UICollectionViewCell()
+            }
+            
+            cell.viewModel = self?.viewModel
+            cell.update(with: photo, index: itemIdentifier)
+            
+            return cell
+        }
+    }
+    
     func cellProvider(collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: Int) -> UICollectionViewCell? {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoViewCell.defaultReuseIdentifier,
                                                             for: indexPath) as? PhotoViewCell,
