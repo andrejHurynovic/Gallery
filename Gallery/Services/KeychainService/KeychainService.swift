@@ -44,7 +44,7 @@ extension KeychainService {
     }
     
     private func setKey(_ key: String?) throws(KeychainServiceError) {
-        guard let key = key else {
+        guard let key = key, key.isEmpty == false else {
             try? deleteKey()
             return
         }
