@@ -8,20 +8,22 @@
 import UIKit
 
 final class RoundedContainerView: UIView {
-    var cornerStyle: CornerStyle
+    private let cornerStyle: CornerStyle
+    private let color: UIColor
     
     // MARK: - Initialization
     init(content: UIView,
          cornerStyle: CornerStyle = .fixed(Constants.UserInterface.cornerRadius),
-         color: UIColor = UIColor.quaternaryLabel,
+         color: UIColor = Constants.UserInterface.borderColor,
          isFilled: Bool = false) {
         self.cornerStyle = cornerStyle
-        super.init(frame: .null)
-        self.backgroundColor = .systemBackground
+        self.color = color
         
+        super.init(frame: .null)
         if isFilled {
             backgroundColor = color
         } else {
+            backgroundColor = .systemBackground
             layer.borderWidth = 1
             layer.borderColor = color.cgColor
         }
@@ -39,7 +41,6 @@ final class RoundedContainerView: UIView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     // MARK: - Lifecycle
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         switch cornerStyle {
@@ -47,6 +48,13 @@ final class RoundedContainerView: UIView {
             layer.cornerRadius = radius
         case .circle:
             layer.cornerRadius = bounds.width / 2
+        }
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            layer.borderColor = color.cgColor
         }
     }
 }
