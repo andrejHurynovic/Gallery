@@ -45,10 +45,7 @@ extension ApplicationCoordinator: ApplicationNavigator {
     func navigateToDualPagePhotosViewController() {
         let allViewController = PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .all))
         let favoriteViewController = PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .favorite))
-        let viewController = DualPageViewController(leadingViewController: allViewController,
-                                                    trailingViewController: favoriteViewController,
-                                                    leadingText: "All",
-                                                    trailingText: "Favorite")
+        let viewController = MultiPageViewController(pages: [allViewController, favoriteViewController])
         navigationController.pushViewController(viewController, animated: true)
     }
     func navigateToSettings() {
