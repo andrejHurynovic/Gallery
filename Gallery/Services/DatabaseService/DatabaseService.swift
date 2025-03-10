@@ -83,6 +83,28 @@ extension DatabaseService {
         }
     }
     
+    func deleteAll() async {
+        let context = backgroundContext
+        guard let posts = mainContext.fetch(with: PersistentPost.fetchRequest()) else { return }
+        
+        @Injected var dataService: (any DataServiceProtocol)?
+        await withTaskGroup(of: Void.self) { group in
+            for post in posts {
+                group.addTask {
+                    await dataService?.changePersistenceStatus(for: post, to: false)
+                }
+            }
+            await group.waitForAll()
+        }
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: String(describing: PersistentPost.self))
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        context.performWithAlert {
+            try $0.execute(deleteRequest)
+            try $0.save()
+        }
+    }
+    
     func update(post: PersistentPost, action: (PersistentPost) -> Void) {
         let context = backgroundContext
         do {
@@ -132,11 +154,13 @@ private extension DatabaseService {
         request.fetchLimit = fetchLimit
         return request
     }
+    
     func fetchRequest(for ids: Set<NSManagedObjectID>) -> NSFetchRequest<PersistentPost> {
         let request = PersistentPost.fetchRequest()
         request.predicate = NSPredicate(format: "self in %@", ids)
         return request
     }
+    
     func idsFetchRequest() -> NSFetchRequest<NSFetchRequestResult> {
         let request = NSFetchRequest<NSFetchRequestResult>(entityName: String(describing: PersistentPost.self))
         request.resultType = .dictionaryResultType

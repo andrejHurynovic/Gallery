@@ -11,6 +11,7 @@ protocol DatabaseServiceProtocol: Actor {
     func insert(post: Photo) -> PersistentPost?
     func update(post: PersistentPost, action: (PersistentPost) -> Void)
     func delete(post: PersistentPost)
+    func deleteAll() async
     
     func fetchPosts(after date: Date) -> [PersistentPost]?
     func fetchPosts(with ids: Set<String>) -> [PersistentPost]?
