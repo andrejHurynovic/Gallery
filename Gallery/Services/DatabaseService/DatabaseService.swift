@@ -52,34 +52,24 @@ final actor DatabaseService: DatabaseServiceProtocol {
 // MARK: - Fetch
 extension DatabaseService {
     func insert(post: Photo) -> PersistentPost? {
-        let context = backgroundContext
-        do {
-            let post = PersistentPost(from: post, in: context)
+        let result: PersistentPost? = backgroundContext.performWithAlert {
+            let post = PersistentPost(from: post, in: $0)
             post.imageBox = imageCacheService?.popImage(id: post.id)
-            try context.save()
+            try $0.save()
             return try mainContext.existingObject(with: post.objectID) as? PersistentPost
-        } catch {
-            Task { [weak self] in
-                await self?.alertService?.showAlert(for: error)
-            }
         }
-        return nil
+        return result
     }
     
     func delete(post: PersistentPost) {
-        let context = backgroundContext
         postsIdsToObjectsIds.removeValue(forKey: post.id)
-        do {
-            guard let post = try context.existingObject(with: post.objectID) as? PersistentPost else { return }
+        backgroundContext.performWithAlert {
+            guard let post = try $0.existingObject(with: post.objectID) as? PersistentPost else { return }
             if let imageBox = post.imageBox {
                 imageCacheService?.addImage(id: post.id, imageBox)
             }
-            context.delete(post)
-            try context.save()
-        } catch {
-            Task { [weak self] in
-                await self?.alertService?.showAlert(for: error)
-            }
+            $0.delete(post)
+            try $0.save()
         }
     }
     
@@ -107,14 +97,10 @@ extension DatabaseService {
     
     func update(post: PersistentPost, action: (PersistentPost) -> Void) {
         let context = backgroundContext
-        do {
-            guard let post = try context.existingObject(with: post.objectID) as? PersistentPost else { return }
+        context.performWithAlert {
+            guard let post = try $0.existingObject(with: post.objectID) as? PersistentPost else { return }
             action(post)
-            try context.save()
-        } catch {
-            Task { [weak self] in
-                await self?.alertService?.showAlert(for: error)
-            }
+            try $0.save()
         }
     }
 }
@@ -122,15 +108,7 @@ extension DatabaseService {
 // MARK: - Fetch
 extension DatabaseService {
     func fetchPosts(after date: Date) -> [PersistentPost]? {
-        var posts: [PersistentPost] = []
-        do {
-            posts = try mainContext.fetch(fetchRequest(after: date))
-        } catch {
-            Task { [weak self] in
-                await self?.alertService?.showAlert(for: error)
-            }
-        }
-        guard !posts.isEmpty else { return nil }
+        let posts: [PersistentPost]? = mainContext.fetch(with: fetchRequest(after: date))
         return posts
     }
     
