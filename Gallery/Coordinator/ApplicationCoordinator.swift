@@ -29,10 +29,10 @@ final class ApplicationCoordinator: Coordinator {
     // MARK: - Public
     func start() {
         if isAPIKeyProvided {
-            navigateToDualPagePhotosViewController()
+            navigateToPhotosMultiPage()
         } else {
             settingsCoordinator.navigateToAPIKeySetting {
-                self.navigateToDualPagePhotosViewController()
+                self.navigateToPhotosMultiPage()
                 guard let dualPagePhotosViewController = self.navigationController.viewControllers.last else { return }
                 self.navigationController.setViewControllers([dualPagePhotosViewController], animated: true)
             }
@@ -42,10 +42,8 @@ final class ApplicationCoordinator: Coordinator {
 
 // MARK: - ApplicationNavigator
 extension ApplicationCoordinator: ApplicationNavigator {
-    func navigateToDualPagePhotosViewController() {
-        let allViewController = PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .all))
-        let favoriteViewController = PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .favorite))
-        let viewController = MultiPageViewController(pages: [allViewController, favoriteViewController])
+    func navigateToPhotosMultiPage() {
+        let viewController = PhotosMultiPageViewController(viewModel: PhotosMultiPageViewModel(applicationNavigator: self))
         navigationController.pushViewController(viewController, animated: true)
     }
     func navigateToSettings() {
