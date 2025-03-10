@@ -5,6 +5,6 @@
 //  Created by Andrej Hurynovič on 28.02.2025.
 //
 
-protocol KeychainServiceProtocol {
+protocol KeychainServiceProtocol: AnyObject {
     var apiKey: String? { get set }
 }
