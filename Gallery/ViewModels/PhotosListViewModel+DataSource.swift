@@ -9,5 +9,12 @@ extension PhotosListViewModel {
     enum DataSource {
         case all
         case favorite
+        
+        var title: String {
+            switch self {
+            case .all: return "All"
+            case .favorite: return "Favorite"
+            }
+        }
     }
 }

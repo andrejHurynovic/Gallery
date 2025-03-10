@@ -15,7 +15,7 @@ final class PhotosListViewModel {
     var photosCount: Int { photos.count }
     var photosUpdatesPublisher = PassthroughSubject<(indexes: [Int]?, count: Int?, removedIndex: Int?), Never>()
     
-    private var dataSource: DataSource
+    let dataSource: DataSource
     
     private var awaitingForContent: Bool = false
     private var nothingToFetch: Bool = false
