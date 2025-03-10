@@ -38,6 +38,7 @@ final class PhotosListViewController: UIViewController {
     init(viewModel: PhotosListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        title = viewModel.dataSource.title
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
