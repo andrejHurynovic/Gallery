@@ -33,6 +33,9 @@ extension Constants {
         static let largeIconSize: CGFloat = 24
         
         static let mediumButtonSize: CGFloat = largeIconSize * 2
+        
+        static let iconColor = UIColor.secondaryLabel
+        static let borderColor = UIColor.quaternaryLabel
     }
 }
 
