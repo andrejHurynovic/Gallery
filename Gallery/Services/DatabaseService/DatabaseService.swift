@@ -168,24 +168,3 @@ private extension DatabaseService {
         return request
     }
 }
-extension NSManagedObjectContext {
-    func fetch<T>(with request: NSFetchRequest<T>) -> [T]? {
-        let result = self.performWithAlert {
-            try $0.fetch(request)
-        }
-        guard result?.isEmpty == false else { return nil }
-        return result
-    }
-}
-
-extension NSManagedObjectContext {
-    func performWithAlert<T>(action: (NSManagedObjectContext) throws -> T) -> T? {
-        do {
-            return try action(self)
-        } catch {
-            @Injected var alertService: (any AlertServiceProtocol)?
-            Task { await alertService?.showAlert(for: error) }
-        }
-        return nil
-    }
-}
