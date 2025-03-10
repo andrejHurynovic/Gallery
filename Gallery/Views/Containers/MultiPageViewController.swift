@@ -7,14 +7,15 @@
 
 import UIKit
 
-final class MultiPageViewController: UIPageViewController {
-    private let currentTitleButton = UILabel(font: .preferredFont(forTextStyle: .largeTitle))
-    private let nextTitleButton = UILabel(font: .preferredFont(forTextStyle: .largeTitle))
-    private let upcomingLabel = UILabel(font: .preferredFont(forTextStyle: .largeTitle))
+class MultiPageViewController: UIPageViewController {
+    private let currentTitle = UILabel(font: .preferredFont(forTextStyle: .largeTitle))
+    private let nextTitle = UILabel(font: .preferredFont(forTextStyle: .largeTitle))
+    private let upcomingTitle = UILabel(font: .preferredFont(forTextStyle: .largeTitle))
     
-    lazy var scrollView: UIScrollView? = { return view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView }()
+    lazy private var scrollView: UIScrollView? = { return view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView }()
     
     private let pages: [UIViewController]
+    private var currentIndex: Int? { pages.firstIndex(where: { $0 == self.viewControllers?.first }) }
     private var previousPageIndex: Int = 0
     
     // MARK: - Initialization
@@ -36,8 +37,8 @@ final class MultiPageViewController: UIPageViewController {
         view.backgroundColor = .systemBackground
         
         scrollView?.delegate = self
-        setupNavigationBar()
         setupLabels()
+        setupNavigationBar()
         updateTitleLabels(for: 0)
     }
     
@@ -47,39 +48,70 @@ final class MultiPageViewController: UIPageViewController {
     }
     
     // MARK: - Setup
-    private func setupLabels() {
-        [currentTitleButton, nextTitleButton, upcomingLabel].forEach {
-            $0.font = UIFont.preferredFont(forTextStyle: .largeTitle).withTraits(traits: .traitBold)
-            $0.translatesAutoresizingMaskIntoConstraints = false
-        }
+    private func setupNavigationBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: currentTitle)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: nextTitle)
+        nextTitle.addSubview(upcomingTitle)
+        navigationController?.hidesBarsOnSwipe = true
     }
     
-    private func setupNavigationBar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: currentTitleButton)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: nextTitleButton)
-        nextTitleButton.addSubview(upcomingLabel)
-        navigationController?.hidesBarsOnSwipe = true
+    private func setupLabels() {
+        let font = UIFont.preferredFont(forTextStyle: .largeTitle).withTraits(traits: .traitBold)
+        [currentTitle, nextTitle, upcomingTitle].forEach {
+            $0.font = font
+            $0.translatesAutoresizingMaskIntoConstraints = false
+        }
+        
+        // Adding tap gesture recognizers
+        let currentTitleTapGesture = UITapGestureRecognizer(target: self, action: #selector(currentTitleTapped))
+        currentTitle.isUserInteractionEnabled = true
+        currentTitle.addGestureRecognizer(currentTitleTapGesture)
+        
+        let nextTitleTapGesture = UITapGestureRecognizer(target: self, action: #selector(nextTitleTapped))
+        nextTitle.isUserInteractionEnabled = true
+        nextTitle.addGestureRecognizer(nextTitleTapGesture)
+    }
+    
+    // MARK: - Public
+    open func getTitles(for index: Int) -> (currentTitle: String?, nextTitle: String?, upcomingTitle: String?) {
+        (currentTitle: pages[index].title,
+         nextTitle: index + 1 < pages.count ? pages[index + 1].title : nil,
+         upcomingTitle: index + 2 < pages.count ? pages[index + 2].title : nil)
+    }
+    
+    open func setPreviousPage(for index: Int?) {
+        guard let index, index > 0 else { return }
+        setViewControllers([pages[index - 1]], direction: .reverse, animated: true) { _ in
+            self.updateTitles()
+        }
+    }
+    open func setNextPage(for index: Int?) {
+        guard let index, index + 1 < pages.count  else { return }
+        print("got here")
+        setViewControllers([pages[index + 1]], direction: .forward, animated: true) { _ in
+            self.updateTitles()
+        }
     }
     
     // MARK: - Private
     private func updateTitleLabels(for index: Int) {
-        currentTitleButton.text = pages[index].title
-        
-        nextTitleButton.text = index + 1 < pages.count ? pages[index + 1].title : nil
-        upcomingLabel.text = index + 2 < pages.count ? pages[index + 2].title : nil
+        let titles = getTitles(for: index)
+        currentTitle.text = titles.currentTitle
+        nextTitle.text = titles.nextTitle
+        upcomingTitle.text = titles.upcomingTitle
     }
     
     private func updateTitles() {
         let tuple: (index: Int, viewController: UIViewController) = pages.enumerated().first { (_, controller) in
-            controller.view.convert(controller.view.frame, to: view).origin.x < 0
-        } ?? (0, pages.first!)
+            return controller.view.convert(controller.view.frame, to: view).origin.x < 0
+        } ?? (previousPageIndex, viewControllers!.first!)
         
         let offsetRatio = -(tuple.viewController.view.convert(tuple.viewController.view.frame, to: view).origin.x / view.bounds.width)
-        let currentViewController = Int(abs(offsetRatio)) + tuple.index
+        let currentPageIndex = Int(abs(offsetRatio)) + tuple.index
         
-        if currentViewController != previousPageIndex {
-            previousPageIndex = currentViewController
-            updateTitleLabels(for: currentViewController)
+        if currentPageIndex != previousPageIndex {
+            previousPageIndex = currentPageIndex
+            updateTitleLabels(for: currentPageIndex)
         }
         
         applyTransformations(for: offsetRatio.truncatingRemainder(dividingBy: 1.0))
@@ -89,14 +121,14 @@ final class MultiPageViewController: UIPageViewController {
         // currentButton
         let currentScale = 1.0 + (0.5 * ratio)
         let currentTranslation = -(view.bounds.width * ratio * 2)
-        currentTitleButton.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
+        currentTitle.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
             .translatedBy(x: currentTranslation, y: 0)
         
         // nextButton
-        nextTitleButton.transform = .identity
+        nextTitle.transform = .identity
         
-        guard let currentTitleSuperview = currentTitleButton.superview,
-              let nextTitleSuperview = nextTitleButton.superview else { return }
+        guard let currentTitleSuperview = currentTitle.superview,
+              let nextTitleSuperview = nextTitle.superview else { return }
         
         let minimalNextScale = 0.7
         let nextScale = minimalNextScale + (0.3 * ratio)
@@ -107,28 +139,37 @@ final class MultiPageViewController: UIPageViewController {
         let minimalNextAlpha = 0.5
         let nextAlpha = (1 - 0.5) + (0.5 * ratio)
         
-        let originalNextWidth = nextTitleButton.frame.width
+        let originalNextWidth = nextTitle.frame.width
         let scaledNextWidth = originalNextWidth * nextScale
         let nextWidthDifference = scaledNextWidth - originalNextWidth
         
         let adjustedTranslation = nextTranslation - (nextWidthDifference / 2)
         
-        nextTitleButton.transform = CGAffineTransform(translationX: adjustedTranslation, y: 0)
+        nextTitle.transform = CGAffineTransform(translationX: adjustedTranslation, y: 0)
             .scaledBy(x: nextScale, y: nextScale)
-        nextTitleButton.alpha = nextAlpha
+        nextTitle.alpha = nextAlpha
         
         // upcomingLabel
-        upcomingLabel.transform = .identity
+        upcomingTitle.transform = .identity
         
-        let originalUpcomingWidth = upcomingLabel.frame.width
+        let originalUpcomingWidth = upcomingTitle.frame.width
         let scaledUpcomingWidth = originalUpcomingWidth * minimalNextScale
         let upcomingWidthDifference = scaledUpcomingWidth - originalUpcomingWidth
         
-        let upcomingTranslation = -(maximalNextTranslation - (nextTitleButton.bounds.width - upcomingLabel.bounds.width)) - (upcomingWidthDifference / 2)
+        let upcomingTranslation = -(maximalNextTranslation - (nextTitle.bounds.width - upcomingTitle.bounds.width)) - (upcomingWidthDifference / 2)
         
-        upcomingLabel.transform = CGAffineTransform(translationX: upcomingTranslation, y: 0)
+        upcomingTitle.transform = CGAffineTransform(translationX: upcomingTranslation, y: 0)
             .scaledBy(x: minimalNextScale, y: minimalNextScale)
-        upcomingLabel.alpha = minimalNextAlpha
+        upcomingTitle.alpha = minimalNextAlpha
+    }
+    
+    // MARK: - Actions
+    @objc private func currentTitleTapped() {
+        setPreviousPage(for: currentIndex)
+    }
+    
+    @objc private func nextTitleTapped() {
+        setNextPage(for: currentIndex)
     }
 }
 
@@ -158,7 +199,10 @@ extension MultiPageViewController: UIPageViewControllerDataSource {
 #Preview {
     let viewControllers = Array(0...4).map {
         let viewController = UIViewController()
-        viewController.view.backgroundColor = UIColor(red: CGFloat.random(in: 0...1), green: CGFloat.random(in: 0...1), blue: CGFloat.random(in: 0...1), alpha: 1.0)
+        viewController.view.backgroundColor = UIColor(red: CGFloat.random(in: 0...1),
+                                                      green: CGFloat.random(in: 0...1),
+                                                      blue: CGFloat.random(in: 0...1),
+                                                      alpha: 1.0)
         viewController.title = "Page \($0)"
         return viewController
     }
