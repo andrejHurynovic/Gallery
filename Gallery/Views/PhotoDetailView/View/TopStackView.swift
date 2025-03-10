@@ -14,7 +14,7 @@ extension PhotoDetailViewController.View {
         private let downloadButton = ImageButton(image: UIImage(resource: .download))
         private let favoriteButton = FavoriteButton()
         
-        private let size: CGFloat = Constants.UserInterface.largeButtonSize
+        private let size: CGFloat = Constants.UserInterface.mediumButtonSize
         
         // MARK: - Initialization
         convenience init() {

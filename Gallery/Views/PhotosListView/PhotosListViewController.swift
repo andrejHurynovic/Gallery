@@ -125,8 +125,8 @@ final class PhotosListViewController: UIViewController {
         NSLayoutConstraint.activate([
             backButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -Constants.UserInterface.horizontalSpacing / 2),
             backButtonTrailingConstraint,
-            backButton.widthAnchor.constraint(equalToConstant: Constants.UserInterface.largeButtonSize),
-            backButton.heightAnchor.constraint(equalToConstant: Constants.UserInterface.largeButtonSize)
+            backButton.widthAnchor.constraint(equalToConstant: Constants.UserInterface.mediumButtonSize),
+            backButton.heightAnchor.constraint(equalToConstant: Constants.UserInterface.mediumButtonSize)
         ])
     }
     

@@ -32,6 +32,6 @@ extension Constants {
         static let smallIconSize: CGFloat = 12
         static let largeIconSize: CGFloat = 24
         
-        static let largeButtonSize: CGFloat = largeIconSize * 2
+        static let mediumButtonSize: CGFloat = largeIconSize * 2
     }
 }
