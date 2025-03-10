@@ -6,5 +6,6 @@
 //
 
 protocol ApplicationNavigator {
+    func navigateToDualPagePhotosViewController()
     func navigateToSettings()
 }
