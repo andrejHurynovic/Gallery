@@ -35,3 +35,9 @@ extension Constants {
         static let mediumButtonSize: CGFloat = largeIconSize * 2
     }
 }
+
+extension Constants {
+    struct UserDefaults {
+        static let imageCacheServiceCountLimit: String = "imageCacheServiceCountLimit"
+    }
+}
