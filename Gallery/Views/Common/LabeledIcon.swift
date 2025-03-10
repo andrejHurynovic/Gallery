@@ -8,7 +8,10 @@
 import UIKit
 
 final class LabeledIcon: UILabel {
-    private let iconText: NSAttributedString
+    private var iconText: NSAttributedString?
+    
+    private let color: UIColor
+    
     private let placeholderText: String
     
     override var text: String? {
@@ -16,12 +19,14 @@ final class LabeledIcon: UILabel {
     }
     
     // MARK: - Initialization
-    init(icon: UIImage,
+    init(icon: UIImage? = nil,
          font: UIFont = UIFontMetrics.default.scaledFont(for: .systemFont(ofSize: 14)),
          color: UIColor = .secondaryLabel,
          placeholderText: String = "-") {
-        
-        self.iconText = Self.createIconText(icon: icon, font: font, color: color)
+        if let icon {
+            self.iconText = Self.createIconText(icon: icon, font: font, color: color)
+        }
+        self.color = color
         self.placeholderText = placeholderText
         super.init(frame: .zero)
         
@@ -30,6 +35,12 @@ final class LabeledIcon: UILabel {
     }
     
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    // MARK: - Public
+    func setIcon(_ icon: UIImage) {
+        self.iconText = Self.createIconText(icon: icon, font: font, color: color)
+        updateAttributedText()
+    }
     
     // MARK: - Private
     private func setupLabel(font: UIFont, color: UIColor) {
@@ -41,6 +52,7 @@ final class LabeledIcon: UILabel {
     }
     
     private func updateAttributedText() {
+        guard let iconText else { return }
         let mutableIconText = NSMutableAttributedString(attributedString: iconText)
         let textToAppend = text ?? placeholderText
         mutableIconText.append(NSAttributedString(string: " " + textToAppend))
