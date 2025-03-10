@@ -8,7 +8,6 @@
 import UIKit
 
 final class DualPageViewController: UIPageViewController {
-    
     private let leadingLabel = UILabel(font: .preferredFont(forTextStyle: .largeTitle))
     private let trailingLabel = UILabel(font: .preferredFont(forTextStyle: .largeTitle))
     
@@ -49,6 +48,9 @@ final class DualPageViewController: UIPageViewController {
         super.viewDidLoad()
         dataSource = self
         delegate = self
+        
+        view.backgroundColor = .systemBackground
+        
         scrollView?.delegate = self
         setupNavigationBar()
     }
