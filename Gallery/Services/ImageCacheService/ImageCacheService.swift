@@ -10,6 +10,11 @@ import Foundation
 final class ImageCacheService<ImageBoxType: ImageBoxProtocol>: ImageCacheServiceProtocol {
     private let storage: NSCache<NSString, ImageBoxType>
     
+    var countLimit: Int {
+        get { storage.countLimit }
+        set { storage.countLimit = newValue }
+    }
+    
     // MARK: - Initialization
     init(countLimit: Int = UserDefaults.standard.value(forKey: Constants.UserDefaults.imageCacheServiceCountLimit) as? Int ?? Constants.imageCacheServiceCountLimit) {
         storage = NSCache<NSString, ImageBoxType>()
