@@ -11,16 +11,16 @@ extension NetworkServiceError: AlertProvider {
         case .incorrectAPIKey:
             return Alert(title: "Incorrect API Key",
                          message: "The API key you entered is incorrect. Please double-check the key and try again.",
-                         actions: changeAPIKeyAction)
+                         actions: settingsAction)
         case .rateLimitExceeded:
             return Alert(title: "Rate Limit Exceeded",
                          message: "The rate limit has been exceeded. Please wait a while before making more requests, or replace your API key.",
-                         actions: changeAPIKeyAction)
+                         actions: settingsAction)
         }
     }
     
-    private var changeAPIKeyAction: Alert.Action {
-        Alert.Action(text: "Change the key") {
+    private var settingsAction: Alert.Action {
+        Alert.Action(text: "Settings") {
             @Injected var applicationNavigator: (any ApplicationNavigator)?
             applicationNavigator?.navigateToSettings()
         }
