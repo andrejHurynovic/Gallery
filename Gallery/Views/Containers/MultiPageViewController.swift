@@ -87,7 +87,6 @@ class MultiPageViewController: UIPageViewController {
     }
     open func setNextPage(for index: Int?) {
         guard let index, index + 1 < pages.count  else { return }
-        print("got here")
         setViewControllers([pages[index + 1]], direction: .forward, animated: true) { _ in
             self.updateTitles()
         }
