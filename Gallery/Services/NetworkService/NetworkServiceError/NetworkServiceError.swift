@@ -8,4 +8,5 @@
 enum NetworkServiceError: Error {
     case incorrectAPIKey
     case rateLimitExceeded
+    case noConnection
 }
