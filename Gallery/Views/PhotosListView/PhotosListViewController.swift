@@ -204,7 +204,7 @@ private extension PhotosListViewController {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoViewCell.defaultReuseIdentifier,
                                                                 for: indexPath) as? PhotoViewCell,
                   let photo = self?.viewModel.photo(for: itemIdentifier) else {
-                return UICollectionViewCell()
+                return nil
             }
             
             cell.viewModel = self?.viewModel
@@ -213,20 +213,7 @@ private extension PhotosListViewController {
             return cell
         }
     }
-    
-    func cellProvider(collectionView: UICollectionView, indexPath: IndexPath, itemIdentifier: Int) -> UICollectionViewCell? {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoViewCell.defaultReuseIdentifier,
-                                                            for: indexPath) as? PhotoViewCell,
-              let photo = viewModel.photo(for: itemIdentifier) else {
-            return UICollectionViewCell()
-        }
         
-        cell.viewModel = viewModel
-        cell.update(with: photo, index: itemIdentifier)
-        
-        return cell
-    }
-    
     func updateSnapshot(force: Bool = false) {
         let indexesOfSections: [Int]
         var snapshot: Snapshot
