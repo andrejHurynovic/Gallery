@@ -9,6 +9,7 @@ import UIKit
 import Combine
 
 final class PhotosListViewModel {
+    @Injected private var alertService: (any AlertServiceProtocol)?
     @Injected private var dataService: (any DataServiceProtocol)?
     @Injected private var networkService: (any NetworkServiceProtocol)?
     
@@ -61,10 +62,9 @@ final class PhotosListViewModel {
     func downloadImage(for index: Int) {
         guard index < photos.count else { return }
         let photo = photos[index]
+        
         Task {
-            guard let imageBox = await dataService?.downloadImage(for: photo),
-                  let image = imageBox.image as? UIImage else { return }
-            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+            await alertService?.showAlert(imageSaveConfirmationAlert(for: photo))
         }
     }
     
