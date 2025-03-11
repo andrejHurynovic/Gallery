@@ -10,6 +10,7 @@ import Combine
 
 final class PhotosListViewModel {
     @Injected private var dataService: (any DataServiceProtocol)?
+    @Injected private var networkService: (any NetworkServiceProtocol)?
     
     private var photos: [any PhotoProtocol] = []
     var photosCount: Int { photos.count }
@@ -21,7 +22,7 @@ final class PhotosListViewModel {
     private var nothingToFetch: Bool = false
     private var targetElementsCount = Constants.photosFetchPageSize
     
-    private var cancellable: AnyCancellable?
+    private var cancellables: Set<AnyCancellable> = []
     
     // MARK: - Initialization
     init(dataSource: DataSource) {
@@ -31,7 +32,7 @@ final class PhotosListViewModel {
     // MARK: - Public
     
     func startMonitor() {
-        addPhotosUpdateSubscription()
+        addSubscriptions()
         fetchMoreContentIfNeeded()
     }
     
@@ -82,13 +83,21 @@ final class PhotosListViewModel {
     }
     
     // MARK: - Private
-    private func addPhotosUpdateSubscription() {
+    private func addSubscriptions() {
+        networkService?.networkAvailablyPublisher.sink { [weak self] isAvailable in
+            if isAvailable == true {
+                self?.fetchMoreContentIfNeeded()
+            }
+        }
+        .store(in: &cancellables)
         Task {
-            cancellable = await dataService?.photosUpdatePublisher
+            await dataService?.photosUpdatePublisher
                 .sink { [weak self] in
                     self?.replacePhoto(photo: $0)
                 }
+                .store(in: &cancellables)
         }
+        
     }
     
     private func replacePhoto(photo: any PhotoProtocol) {
