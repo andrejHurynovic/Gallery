@@ -61,7 +61,7 @@ class ReusablePagesViewController<T: ReusablePageViewController>: UIPageViewCont
             case removedIndex:
                 removedIndexViewController = reusableViewController
                 reusableViewController.index -= 1
-            case ...(removedIndex - 1):
+            case 0...(removedIndex - 1):
                 previousViewController = reusableViewController
             default: break
             }
@@ -70,10 +70,15 @@ class ReusablePagesViewController<T: ReusablePageViewController>: UIPageViewCont
         if !shouldTransit {
             guard let removedIndexViewController else { return }
             removedIndexViewController.update(index: removedIndexViewController.index)
-        } else if let nextViewController = nextViewController ?? reusableViewController(after: removedIndex) {
-            setViewControllers([nextViewController], direction: .forward, animated: true)
-        } else if let previousViewController = previousViewController ?? reusableViewController(before: removedIndex) {
-            setViewControllers([previousViewController], direction: .reverse, animated: true)
+        } else {
+            removedIndexViewController?.index = -1
+            if let nextViewController = nextViewController ?? reusableViewController(after: removedIndex) {
+                currentViewController = nextViewController
+                setViewControllers([nextViewController], direction: .forward, animated: true)
+            } else if let previousViewController = previousViewController ?? reusableViewController(before: removedIndex) {
+                currentViewController = previousViewController
+                setViewControllers([previousViewController], direction: .reverse, animated: true)
+            }
         }
     }
     
