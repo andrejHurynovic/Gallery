@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension PhotosListHelper.CompositionalLayoutHelper {
+extension PostsListHelper.CompositionalLayoutHelper {
     struct Requirements: Hashable {
         let numberOfColumns: Int
         let itemHeight: CGFloat
@@ -21,8 +21,8 @@ extension PhotosListHelper.CompositionalLayoutHelper {
         }
         
         init(containerWidth: CGFloat,
-             minimalItemWidth: CGFloat = Constants.UserInterface.photoCellMinimalWidth,
-             itemHeight: CGFloat = Constants.UserInterface.photoCellHeight,
+             minimalItemWidth: CGFloat = Constants.UserInterface.postCellMinimalWidth,
+             itemHeight: CGFloat = Constants.UserInterface.postCellHeight,
              itemSpacing: CGFloat = Constants.UserInterface.horizontalSpacing) {
             self.numberOfColumns = Int((containerWidth / (minimalItemWidth + itemSpacing)).rounded(.down))
             let totalSpacing = CGFloat(numberOfColumns + 1) * itemSpacing

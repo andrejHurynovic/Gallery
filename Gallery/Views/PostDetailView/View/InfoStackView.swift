@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension PhotoDetailViewController.View {
+extension PostDetailViewController.View {
     final class InfoStackView: UIStackView {
         private let viewsLabel = LabeledIcon(icon: UIImage(resource: .views))
         private let downloadsLabel = LabeledIcon(icon: UIImage(resource: .download))

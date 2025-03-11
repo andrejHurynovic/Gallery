@@ -29,12 +29,12 @@ final class ApplicationCoordinator: Coordinator {
     // MARK: - Public
     func start() {
         if isAPIKeyProvided {
-            navigateToPhotosMultiPage()
+            navigateToPostsMultiPage()
         } else {
             settingsCoordinator.navigateToAPIKeySetting {
-                self.navigateToPhotosMultiPage()
-                guard let dualPagePhotosViewController = self.navigationController.viewControllers.last else { return }
-                self.navigationController.setViewControllers([dualPagePhotosViewController], animated: true)
+                self.navigateToPostsMultiPage()
+                guard let dualPagePostsViewController = self.navigationController.viewControllers.last else { return }
+                self.navigationController.setViewControllers([dualPagePostsViewController], animated: true)
             }
         }
     }
@@ -42,8 +42,8 @@ final class ApplicationCoordinator: Coordinator {
 
 // MARK: - ApplicationNavigator
 extension ApplicationCoordinator: ApplicationNavigator {
-    func navigateToPhotosMultiPage() {
-        let viewController = PhotosMultiPageViewController(viewModel: PhotosMultiPageViewModel(applicationNavigator: self))
+    func navigateToPostsMultiPage() {
+        let viewController = PostsMultiPageViewController(viewModel: PostsMultiPageViewModel(applicationNavigator: self))
         navigationController.pushViewController(viewController, animated: true)
     }
     func navigateToSettings() {

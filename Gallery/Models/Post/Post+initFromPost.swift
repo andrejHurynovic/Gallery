@@ -1,12 +1,12 @@
 //
-//  Photo+initFromPost.swift
+//  Post+initFromPost.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 09.03.2025.
 //
 
-extension Photo {
-    convenience init(from post: any PhotoProtocol) {
+extension Post {
+    convenience init(from post: any PostProtocol) {
         self.init(id: post.id,
                   width: post.width,
                   height: post.height,

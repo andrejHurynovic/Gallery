@@ -1,5 +1,5 @@
 //
-//  PhotoViewCell.swift
+//  PostViewCell.swift
 //  UIKitLearning
 //
 //  Created by Andrej Hurynovič on 28.02.2025.
@@ -7,8 +7,8 @@
 
 import UIKit
 
-final class PhotoViewCell: UICollectionViewCell {
-    var viewModel: PhotosListViewModel!
+final class PostViewCell: UICollectionViewCell {
+    var viewModel: PostsListViewModel!
     
     private let imageView = UIImageView()
     private let favoriteIconImageView = UIImageView()
@@ -66,9 +66,9 @@ final class PhotoViewCell: UICollectionViewCell {
     }
     
     // MARK: - Public
-    func update(with photo: any PhotoProtocol, index: Int) {
-        backgroundColor = UIColor(hexadecimalColorCode: photo.hexadecimalColorCode)
-        favoriteIconImageView.image = UIImage(resource: photo.isPersistent ? .favoriteFilled : .favorite).withTintColor(.white)
+    func update(with post: any PostProtocol, index: Int) {
+        backgroundColor = UIColor(hexadecimalColorCode: post.hexadecimalColorCode)
+        favoriteIconImageView.image = UIImage(resource: post.isPersistent ? .favoriteFilled : .favorite).withTintColor(.white)
         addImageUpdateTask(for: index)
     }
     

@@ -51,7 +51,7 @@ final actor DatabaseService: DatabaseServiceProtocol {
 
 // MARK: - Fetch
 extension DatabaseService {
-    func insert(post: Photo) -> PersistentPost? {
+    func insert(post: Post) -> PersistentPost? {
         let result: PersistentPost? = backgroundContext.performWithAlert {
             let post = PersistentPost(from: post, in: $0)
             post.imageBox = imageCacheService?.popImage(id: post.id)
@@ -125,7 +125,7 @@ extension DatabaseService {
 
 // MARK: - Fetch requests
 private extension DatabaseService {
-    func fetchRequest(after date: Date, fetchLimit: Int = Constants.photosFetchPageSize) -> NSFetchRequest<PersistentPost> {
+    func fetchRequest(after date: Date, fetchLimit: Int = Constants.postsFetchPageSize) -> NSFetchRequest<PersistentPost> {
         let request = PersistentPost.fetchRequest()
         request.predicate = NSPredicate(format: "%K < %@", #keyPath(PersistentPost.dateOfInsertion), date as NSDate)
         request.sortDescriptors = [NSSortDescriptor(keyPath: \PersistentPost.dateOfInsertion, ascending: false)]

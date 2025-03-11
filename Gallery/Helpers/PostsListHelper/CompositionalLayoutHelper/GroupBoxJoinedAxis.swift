@@ -5,7 +5,7 @@
 //  Created by Andrej Hurynovič on 01.03.2025.
 //
 
-extension PhotosListHelper.CompositionalLayoutHelper {
+extension PostsListHelper.CompositionalLayoutHelper {
     enum GroupBoxJoinedAxis {
         case vertical
         case horizontal

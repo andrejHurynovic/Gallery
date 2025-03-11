@@ -1,5 +1,5 @@
 //
-//  PhotoProtocol.swift
+//  PostProtocol.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 28.02.2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol PhotoProtocol: Identifiable {
+protocol PostProtocol: Identifiable {
     var id: String { get }
     
     var isPersistent: Bool { get }
@@ -27,5 +27,5 @@ protocol PhotoProtocol: Identifiable {
     var imageURL: String { get }
     var downloadURL: String { get }
     
-    func update(from post: any PhotoProtocol)
+    func update(from post: any PostProtocol)
 }

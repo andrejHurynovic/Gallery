@@ -5,8 +5,8 @@
 //  Created by Andrej Hurynovič on 07.03.2025.
 //
 
-extension Photo {
-    func update(from post: any PhotoProtocol) {
+extension Post {
+    func update(from post: any PostProtocol) {
         id = post.id
         width = post.width
         height = post.height

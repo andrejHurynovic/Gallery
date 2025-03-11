@@ -6,7 +6,7 @@
 //
 
 extension PersistentPost {
-    func update(from post: any PhotoProtocol) {
+    func update(from post: any PostProtocol) {
         id = post.id
         width = post.width
         height = post.height

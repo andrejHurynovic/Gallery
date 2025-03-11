@@ -1,5 +1,5 @@
 //
-//  PhotoDetailPagesViewController.swift
+//  PostDetailPagesViewController.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 08.03.2025.
@@ -7,12 +7,12 @@
 
 import UIKit
 
-final class PhotoDetailPagesViewController: ReusablePagesViewController<PhotoDetailViewController> {
-    var viewModel: PhotosListViewModel
-    override var dataCount: Int { viewModel.photosCount }
+final class PostDetailPagesViewController: ReusablePagesViewController<PostDetailViewController> {
+    var viewModel: PostsListViewModel
+    override var dataCount: Int { viewModel.postsCount }
     
     // MARK: - Initialization
-    init(initialIndex: Int, viewModel: PhotosListViewModel) {
+    init(initialIndex: Int, viewModel: PostsListViewModel) {
         self.viewModel = viewModel
         super.init(initialIndex: initialIndex)
     }
@@ -26,8 +26,8 @@ final class PhotoDetailPagesViewController: ReusablePagesViewController<PhotoDet
     }
     
     // MARK: - Public
-    override func createReusableViewController() -> PhotoDetailViewController {
-        PhotoDetailViewController(viewModel: viewModel)
+    override func createReusableViewController() -> PostDetailViewController {
+        PostDetailViewController(viewModel: viewModel)
     }
     
     // MARK: - Private

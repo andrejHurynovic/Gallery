@@ -1,5 +1,5 @@
 //
-//  PhotoDetailView.swift
+//  PostDetailView.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 05.03.2025.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension PhotoDetailViewController {
+extension PostDetailViewController {
     final class View: UIView {
         private let scrollView: UIScrollView = {
             let scrollView = UIScrollView()
@@ -90,13 +90,13 @@ extension PhotoDetailViewController {
         }
         
         // MARK: - Public
-        func update(with photo: any PhotoProtocol) {
-            updateImageView(with: photo)
+        func update(with post: any PostProtocol) {
+            updateImageView(with: post)
             
-            actionsStackView.update(creationDate: photo.publicationDate, isFavorite: photo.isPersistent)
-            infoStackView.update(views: photo.views, downloads: photo.downloads, likes: photo.likes)
-            titleLabel.text = photo.alternativeDescriptionText
-            descriptionLabel.text = photo.descriptionText
+            actionsStackView.update(creationDate: post.publicationDate, isFavorite: post.isPersistent)
+            infoStackView.update(views: post.views, downloads: post.downloads, likes: post.likes)
+            titleLabel.text = post.alternativeDescriptionText
+            descriptionLabel.text = post.descriptionText
         }
         
         func updateImage(image: UIImage?) {
@@ -121,22 +121,22 @@ extension PhotoDetailViewController {
         }
         
         // MARK: - Private
-        private func updateImageView(with photo: any PhotoProtocol) {
-            let aspectRatio = CGFloat(photo.width) / CGFloat(photo.height)
+        private func updateImageView(with post: any PostProtocol) {
+            let aspectRatio = CGFloat(post.width) / CGFloat(post.height)
             imageViewHeightConstraint?.isActive = false
             imageViewHeightConstraint = imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: 1 / aspectRatio)
             imageViewHeightConstraint?.isActive = true
-            imageView.backgroundColor = UIColor(hexadecimalColorCode: photo.hexadecimalColorCode)
+            imageView.backgroundColor = UIColor(hexadecimalColorCode: post.hexadecimalColorCode)
         }
     }
 }
 
 @available(iOS 17.0, *)
 #Preview {
-    PhotoDetailViewController(viewModel: PhotosListViewModel(dataSource: .all))
+    PostDetailViewController(viewModel: PostsListViewModel(dataSource: .all))
 }
 
 @available(iOS 17.0, *)
 #Preview {
-    PhotoDetailViewController(viewModel: PhotosListViewModel(dataSource: .favorite))
+    PostDetailViewController(viewModel: PostsListViewModel(dataSource: .favorite))
 }

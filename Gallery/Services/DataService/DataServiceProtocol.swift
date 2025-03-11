@@ -9,17 +9,17 @@ import Combine
 import CoreGraphics
 
 protocol DataServiceProtocol: Actor {
-    var photosUpdatePublisher: PassthroughSubject<any PhotoProtocol, Never> { get }
+    var postsUpdatePublisher: PassthroughSubject<any PostProtocol, Never> { get }
     
-    func updatePhoto(photo: any PhotoProtocol) async
+    func updatePost(post: any PostProtocol) async
     // Adding "to" to the swiftlint exclude list for identifier_name does not work
     // swiftlint:disable identifier_name
-    func changePersistenceStatus(for photo: any PhotoProtocol, to: Bool) async
+    func changePersistenceStatus(for post: any PostProtocol, to: Bool) async
     // swiftlint:enable identifier_name
-    func getPhotos(for query: String?) async -> [any PhotoProtocol]?
-    func getFavoritePhotos() async -> [any PhotoProtocol]?
+    func getPosts(for query: String?) async -> [any PostProtocol]?
+    func getFavoritePosts() async -> [any PostProtocol]?
     
-    func scaledImage(for photo: any PhotoProtocol, with size: CGSize) async -> (any ImageBoxProtocol)?
-    func rawImage(for photo: any PhotoProtocol) async -> (any ImageBoxProtocol)?
-    func downloadImage(for photo: any PhotoProtocol) async -> (any ImageBoxProtocol)?
+    func scaledImage(for post: any PostProtocol, with size: CGSize) async -> (any ImageBoxProtocol)?
+    func rawImage(for post: any PostProtocol) async -> (any ImageBoxProtocol)?
+    func downloadImage(for post: any PostProtocol) async -> (any ImageBoxProtocol)?
 }

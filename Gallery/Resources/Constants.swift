@@ -10,7 +10,7 @@ import UIKit
 struct Constants {
     static let screenScale = UIScreen().scale
     static let baseAPIEndpointURL = URL(string: "https://api.unsplash.com")!
-    static let photosFetchPageSize = 30
+    static let postsFetchPageSize = 30
     static let imageFetchThreshold = 30
     /// The maximum number of images that can be stored in the image cache service at one time.
     static let imageCacheServiceCountLimit = 100
@@ -26,8 +26,8 @@ extension Constants {
         static let verticalSpacing: CGFloat = 12
         static let horizontalSpacing: CGFloat = 16
         
-        static let photoCellMinimalWidth: CGFloat = 100
-        static let photoCellHeight: CGFloat = 84
+        static let postCellMinimalWidth: CGFloat = 100
+        static let postCellHeight: CGFloat = 84
         
         static let smallIconSize: CGFloat = 12
         static let largeIconSize: CGFloat = 24

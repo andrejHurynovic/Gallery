@@ -8,7 +8,7 @@
 import Foundation
 
 protocol DatabaseServiceProtocol: Actor {
-    func insert(post: Photo) -> PersistentPost?
+    func insert(post: Post) -> PersistentPost?
     func update(post: PersistentPost, action: (PersistentPost) -> Void)
     func delete(post: PersistentPost)
     func deleteAll() async

@@ -1,5 +1,5 @@
 //
-//  PhotosMultiPageViewController.swift
+//  PostsMultiPageViewController.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 11.03.2025.
@@ -7,17 +7,17 @@
 
 import UIKit
 
-final class PhotosMultiPageViewController: MultiPageViewController {
+final class PostsMultiPageViewController: MultiPageViewController {
     private let settingsTitle = "Settings"
     
-    private let viewModel: PhotosMultiPageViewModel
+    private let viewModel: PostsMultiPageViewModel
     
     // MARK: - Initialization
-    init(viewModel: PhotosMultiPageViewModel) {
+    init(viewModel: PostsMultiPageViewModel) {
         self.viewModel = viewModel
         super.init(pages: [
-            PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .all)),
-            PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .favorite))
+            PostsListViewController(viewModel: PostsListViewModel(dataSource: .all)),
+            PostsListViewController(viewModel: PostsListViewModel(dataSource: .favorite))
         ])
     }
     
@@ -45,8 +45,8 @@ final class PhotosMultiPageViewController: MultiPageViewController {
 @available(iOS 17.0, *)
 #Preview {
     let navigationController = UINavigationController()
-    let viewModel = PhotosMultiPageViewModel(applicationNavigator: ApplicationCoordinator(with: navigationController))
-    let viewController = PhotosMultiPageViewController(viewModel: viewModel)
+    let viewModel = PostsMultiPageViewModel(applicationNavigator: ApplicationCoordinator(with: navigationController))
+    let viewController = PostsMultiPageViewController(viewModel: viewModel)
     navigationController.pushViewController(viewController, animated: false)
     return navigationController
 }

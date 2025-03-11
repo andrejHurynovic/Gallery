@@ -1,5 +1,5 @@
 //
-//  PhotosListViewController.swift
+//  PostsListViewController.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 03.03.2025.
@@ -8,9 +8,9 @@
 import UIKit
 import Combine
 
-final class PhotosListViewController: UIViewController {
-    private let viewModel: PhotosListViewModel
-    private let helper = PhotosListHelper()
+final class PostsListViewController: UIViewController {
+    private let viewModel: PostsListViewModel
+    private let helper = PostsListHelper()
     
     private var collectionView: UICollectionView!
     private var dataSource: DataSource!
@@ -32,10 +32,10 @@ final class PhotosListViewController: UIViewController {
         return buttonContainer
     }()
     
-    private weak var photoDetailPagesViewController: PhotoDetailPagesViewController?
+    private weak var postDetailPagesViewController: PostDetailPagesViewController?
     
     // MARK: - Initialization
-    init(viewModel: PhotosListViewModel) {
+    init(viewModel: PostsListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         title = viewModel.dataSource.title
@@ -74,11 +74,11 @@ final class PhotosListViewController: UIViewController {
     
     // MARK: - Setup
     private func addCancellables() {
-        viewModel.photosUpdatesPublisher
+        viewModel.postsUpdatesPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] (indexes, count, removedIndex) in
                 if let removedIndex {
-                    self?.photoDetailPagesViewController?.remove(index: removedIndex)
+                    self?.postDetailPagesViewController?.remove(index: removedIndex)
                 }
                 if let count, indexes != nil {
                     self?.update(itemsCount: count)
@@ -99,7 +99,7 @@ final class PhotosListViewController: UIViewController {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: helper.collectionViewLayout(for: requirements))
         dataSource = createDataSource(for: collectionView)
         collectionView.dataSource = dataSource
-        collectionView.register(PhotoViewCell.self, forCellWithReuseIdentifier: PhotoViewCell.defaultReuseIdentifier)
+        collectionView.register(PostViewCell.self, forCellWithReuseIdentifier: PostViewCell.defaultReuseIdentifier)
     }
     
     // MARK: - Layout
@@ -181,14 +181,14 @@ final class PhotosListViewController: UIViewController {
     }
 }
 
-private extension PhotosListViewController {
-    var requirements: PhotosListHelper.CompositionalLayoutHelper.Requirements {
-        PhotosListHelper.CompositionalLayoutHelper.Requirements(containerWidth: safeAreaWidth)
+private extension PostsListViewController {
+    var requirements: PostsListHelper.CompositionalLayoutHelper.Requirements {
+        PostsListHelper.CompositionalLayoutHelper.Requirements(containerWidth: safeAreaWidth)
     }
 }
 
 // MARK: - DataSource
-private extension PhotosListViewController {
+private extension PostsListViewController {
     typealias SectionIdentifierType = Int
     typealias ItemIdentifierType = Int
     
@@ -201,14 +201,14 @@ private extension PhotosListViewController {
     
     private var cellProvider: (_ collectionView: UICollectionView, _ indexPath: IndexPath, _ itemIdentifier: ItemIdentifierType) -> UICollectionViewCell? {
         { [weak self] collectionView, indexPath, itemIdentifier in
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoViewCell.defaultReuseIdentifier,
-                                                                for: indexPath) as? PhotoViewCell,
-                  let photo = self?.viewModel.photo(for: itemIdentifier) else {
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PostViewCell.defaultReuseIdentifier,
+                                                                for: indexPath) as? PostViewCell,
+                  let post = self?.viewModel.post(for: itemIdentifier) else {
                 return nil
             }
             
             cell.viewModel = self?.viewModel
-            cell.update(with: photo, index: itemIdentifier)
+            cell.update(with: post, index: itemIdentifier)
             
             return cell
         }
@@ -252,12 +252,12 @@ private extension PhotosListViewController {
 }
 
 // MARK: - Delegate
-extension PhotosListViewController: UICollectionViewDelegate {
+extension PostsListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         let itemIdentifier = helper.identifier(for: indexPath)
-        let viewController = PhotoDetailPagesViewController(initialIndex: itemIdentifier, viewModel: viewModel)
+        let viewController = PostDetailPagesViewController(initialIndex: itemIdentifier, viewModel: viewModel)
         
-        photoDetailPagesViewController = viewController
+        postDetailPagesViewController = viewController
         present(UINavigationController(rootViewController: viewController), animated: true)
         return true
     }
@@ -268,5 +268,5 @@ extension PhotosListViewController: UICollectionViewDelegate {
 
 @available(iOS 17.0, *)
 #Preview {
-    PhotosListViewController(viewModel: PhotosListViewModel(dataSource: .all))
+    PostsListViewController(viewModel: PostsListViewModel(dataSource: .all))
 }

@@ -8,7 +8,7 @@
 import CoreData
 
 extension PersistentPost {
-    convenience init(from post: Photo, in context: NSManagedObjectContext) {
+    convenience init(from post: Post, in context: NSManagedObjectContext) {
         self.init(context: context)
         self.dateOfInsertion = Date()
         update(from: post)

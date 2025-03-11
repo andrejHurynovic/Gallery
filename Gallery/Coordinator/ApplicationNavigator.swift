@@ -6,6 +6,6 @@
 //
 
 protocol ApplicationNavigator {
-    func navigateToPhotosMultiPage()
+    func navigateToPostsMultiPage()
     func navigateToSettings()
 }

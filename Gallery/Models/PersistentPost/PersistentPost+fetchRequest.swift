@@ -7,7 +7,7 @@
 
 import CoreData
 
-extension PersistentPost: PhotoProtocol {
+extension PersistentPost: PostProtocol {
     @nonobjc class func fetchRequest() -> NSFetchRequest<PersistentPost> {
         NSFetchRequest<PersistentPost>(entityName: String(describing: PersistentPost.self))
     }

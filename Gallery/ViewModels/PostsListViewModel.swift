@@ -1,5 +1,5 @@
 //
-//  PhotosListViewModel.swift
+//  PostsListViewModel.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 03.03.2025.
@@ -8,20 +8,20 @@
 import UIKit
 import Combine
 
-final class PhotosListViewModel {
+final class PostsListViewModel {
     @Injected private var alertService: (any AlertServiceProtocol)?
     @Injected private var dataService: (any DataServiceProtocol)?
     @Injected private var networkService: (any NetworkServiceProtocol)?
     
-    private var photos: [any PhotoProtocol] = []
-    var photosCount: Int { photos.count }
-    var photosUpdatesPublisher = PassthroughSubject<(indexes: [Int]?, count: Int?, removedIndex: Int?), Never>()
+    private var posts: [any PostProtocol] = []
+    var postsCount: Int { posts.count }
+    var postsUpdatesPublisher = PassthroughSubject<(indexes: [Int]?, count: Int?, removedIndex: Int?), Never>()
     
     let dataSource: DataSource
     
     private var awaitingForContent: Bool = false
     private var nothingToFetch: Bool = false
-    private var targetElementsCount = Constants.photosFetchPageSize
+    private var targetElementsCount = Constants.postsFetchPageSize
     
     private var cancellables: Set<AnyCancellable> = []
     
@@ -43,42 +43,42 @@ final class PhotosListViewModel {
         }
         guard !nothingToFetch,
               !awaitingForContent,
-              photos.count < targetElementsCount else { return }
+              posts.count < targetElementsCount else { return }
         fetchMoreContent()
     }
     
-    func photo(for index: Int) -> (any PhotoProtocol)? {
+    func post(for index: Int) -> (any PostProtocol)? {
         fetchMoreContentIfNeeded(for: index)
-        guard index < photos.count else { return nil }
-        return photos[index]
+        guard index < posts.count else { return nil }
+        return posts[index]
     }
     
     func getImage(for index: Int, with size: CGSize) async -> (any ImageBoxProtocol)? {
-        guard index < photos.count else { return nil }
-        guard let image = await dataService?.scaledImage(for: photos[index], with: size) else { return nil }
+        guard index < posts.count else { return nil }
+        guard let image = await dataService?.scaledImage(for: posts[index], with: size) else { return nil }
         return image
     }
     
     func downloadImage(for index: Int) {
-        guard index < photos.count else { return }
-        let photo = photos[index]
+        guard index < posts.count else { return }
+        let post = posts[index]
         
         Task {
-            await alertService?.showAlert(imageSaveConfirmationAlert(for: photo))
+            await alertService?.showAlert(imageSaveConfirmationAlert(for: post))
         }
     }
     
-    func updatePhoto(for index: Int) async {
-        guard index < photos.count else { return }
-        let photo = photos[index]
-        await dataService?.updatePhoto(photo: photo)
+    func updatePost(for index: Int) async {
+        guard index < posts.count else { return }
+        let post = posts[index]
+        await dataService?.updatePost(post: post)
     }
     
     func toggleFavorite(for index: Int) {
-        guard index < photos.count else { return }
-        let photo = self.photos[index]
+        guard index < posts.count else { return }
+        let post = self.posts[index]
         Task { [weak dataService] in
-            await dataService?.changePersistenceStatus(for: photo, to: !photo.isPersistent)
+            await dataService?.changePersistenceStatus(for: post, to: !post.isPersistent)
         }
     }
     
@@ -91,35 +91,35 @@ final class PhotosListViewModel {
         }
         .store(in: &cancellables)
         Task {
-            await dataService?.photosUpdatePublisher
+            await dataService?.postsUpdatePublisher
                 .sink { [weak self] in
-                    self?.replacePhoto(photo: $0)
+                    self?.replacePost(post: $0)
                 }
                 .store(in: &cancellables)
         }
         
     }
     
-    private func replacePhoto(photo: any PhotoProtocol) {
-        if let index = photos.firstIndex(where: { $0.id == photo.id }) {
+    private func replacePost(post: any PostProtocol) {
+        if let index = posts.firstIndex(where: { $0.id == post.id }) {
             foundIndex(index)
         } else if dataSource == .favorite {
-            photos.insert(photo, at: 0)
-            photosUpdatesPublisher.send((indexes: [0], count: photos.count, removedIndex: nil))
+            posts.insert(post, at: 0)
+            postsUpdatesPublisher.send((indexes: [0], count: posts.count, removedIndex: nil))
         }
         
         func foundIndex(_ index: Int) {
             switch dataSource {
             case .all:
-                photos[index] = photo
-                photosUpdatesPublisher.send((indexes: [index], count: nil, removedIndex: nil))
+                posts[index] = post
+                postsUpdatesPublisher.send((indexes: [index], count: nil, removedIndex: nil))
             case .favorite:
-                if photo.isPersistent {
-                    photos[index] = photo
-                    photosUpdatesPublisher.send((indexes: [index], count: nil, removedIndex: nil))
+                if post.isPersistent {
+                    posts[index] = post
+                    postsUpdatesPublisher.send((indexes: [index], count: nil, removedIndex: nil))
                 } else {
-                    photos.remove(at: index)
-                    photosUpdatesPublisher.send((indexes: nil, count: photos.count, removedIndex: index))
+                    posts.remove(at: index)
+                    postsUpdatesPublisher.send((indexes: nil, count: posts.count, removedIndex: index))
                 }
             }
         }
@@ -131,22 +131,22 @@ final class PhotosListViewModel {
             
             self?.awaitingForContent = true
             
-            let fetchedPhotos: [any PhotoProtocol]?
+            let fetchedPosts: [any PostProtocol]?
             guard let dataSource = self?.dataSource else { return }
             switch dataSource {
             case .all:
-                fetchedPhotos = await self?.dataService?.getPhotos(for: nil)
+                fetchedPosts = await self?.dataService?.getPosts(for: nil)
             case .favorite:
-                guard let fetchedFavoritePhotos = await self?.dataService?.getFavoritePhotos() else {
+                guard let fetchedFavoritePosts = await self?.dataService?.getFavoritePosts() else {
                     self?.nothingToFetch = true
                     return
                 }
-                fetchedPhotos = fetchedFavoritePhotos
+                fetchedPosts = fetchedFavoritePosts
             }
             
-            guard let fetchedPhotos else { return }
-            self?.photos.append(contentsOf: fetchedPhotos)
-            self?.photosUpdatesPublisher.send((indexes: nil, count: self?.photos.count, removedIndex: nil))
+            guard let fetchedPosts else { return }
+            self?.posts.append(contentsOf: fetchedPosts)
+            self?.postsUpdatesPublisher.send((indexes: nil, count: self?.posts.count, removedIndex: nil))
             
             self?.fetchMoreContentIfNeeded()
         }

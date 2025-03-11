@@ -1,11 +1,11 @@
 //
-//  PhotosMultiPageViewModel.swift
+//  PostsMultiPageViewModel.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 11.03.2025.
 //
 
-final class PhotosMultiPageViewModel {
+final class PostsMultiPageViewModel {
     private var applicationNavigator: ApplicationNavigator
     
     // MARK: - Init

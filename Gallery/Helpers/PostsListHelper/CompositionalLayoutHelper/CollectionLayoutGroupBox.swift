@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension PhotosListHelper.CompositionalLayoutHelper {
+extension PostsListHelper.CompositionalLayoutHelper {
     struct CollectionLayoutGroupBox {
         let item: NSCollectionLayoutItem
         let itemsCount: Int

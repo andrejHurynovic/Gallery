@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension PhotoDetailViewController.View {
+extension PostDetailViewController.View {
     final class TopStackView: UIStackView {
         private let creationDateLabel = UILabel(font: UIFontMetrics.default.scaledFont(for: .systemFont(ofSize: 14)),
                                                 color: .secondaryLabel)

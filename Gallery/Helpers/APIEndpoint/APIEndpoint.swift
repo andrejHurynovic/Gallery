@@ -8,10 +8,10 @@
 import Foundation
 
 enum APIEndpoint: APIEndpointProtocol {
-    case photo(id: String)
+    case post(id: String)
     
-    case photos(page: Int, photosPerPage: Int)
-    case photosSearch(page: Int, photosPerPage: Int, query: String)
+    case posts(page: Int, postsPerPage: Int)
+    case postsSearch(page: Int, postsPerPage: Int, query: String)
     
     case imageDownload(url: String)
     case imageWithRequirements(_ requirements: any ImageRequirementsProtocol)
@@ -30,12 +30,12 @@ enum APIEndpoint: APIEndpointProtocol {
     
     private var url: URL? {
         switch self {
-        case let .photo(id):
+        case let .post(id):
             return Constants.baseAPIEndpointURL.appendingPathComponent(APIEndpointConstants.photosPath).appendingPathComponent(id)
-        case let .photos(page, photosPerPage):
-            return makePhotosURL(page: page, photosPerPage: photosPerPage)
-        case let .photosSearch(page, photosPerPage, query):
-            return makePhotosSearchURL(page: page, photosPerPage: photosPerPage, query: query)
+        case let .posts(page, postsPerPage):
+            return makePostsURL(page: page, postsPerPage: postsPerPage)
+        case let .postsSearch(page, postsPerPage, query):
+            return makePostsSearchURL(page: page, postsPerPage: postsPerPage, query: query)
         case let .imageDownload(url):
             return URL(string: url)
         case let .imageWithRequirements(requirement):
@@ -46,28 +46,28 @@ enum APIEndpoint: APIEndpointProtocol {
 }
 
 private extension APIEndpoint {
-    static let photosComponents = URLComponents(url: Constants.baseAPIEndpointURL
+    static let postsComponents = URLComponents(url: Constants.baseAPIEndpointURL
         .appendingPathComponent(APIEndpointConstants.photosPath), resolvingAgainstBaseURL: false)!
-    static let photosSearchComponents = URLComponents(url: Constants.baseAPIEndpointURL
+    static let postsSearchComponents = URLComponents(url: Constants.baseAPIEndpointURL
         .appendingPathComponent(APIEndpointConstants.searchPath)
         .appendingPathComponent(APIEndpointConstants.photosPath), resolvingAgainstBaseURL: false)!
     
-    static func queryItems(page: Int, photosPerPage: Int, query: String? = nil) -> [URLQueryItem] {
+    static func queryItems(page: Int, postsPerPage: Int, query: String? = nil) -> [URLQueryItem] {
         var items: [URLQueryItem] = [URLQueryItem(name: APIEndpointConstants.pageQueryItem, value: String(page)),
-                                     URLQueryItem(name: APIEndpointConstants.perPageQueryItem, value: String(photosPerPage))]
+                                     URLQueryItem(name: APIEndpointConstants.perPageQueryItem, value: String(postsPerPage))]
         if let query { items.append(URLQueryItem(name: APIEndpointConstants.queryQueryItem, value: query)) }
         return items
     }
     
-    func makePhotosURL(page: Int, photosPerPage: Int) -> URL? {
-        var components = Self.photosComponents
-        components.queryItems = Self.queryItems(page: page, photosPerPage: photosPerPage)
+    func makePostsURL(page: Int, postsPerPage: Int) -> URL? {
+        var components = Self.postsComponents
+        components.queryItems = Self.queryItems(page: page, postsPerPage: postsPerPage)
         return components.url
     }
     
-    func makePhotosSearchURL(page: Int, photosPerPage: Int, query: String) -> URL? {
-        var components = Self.photosSearchComponents
-        components.queryItems = Self.queryItems(page: page, photosPerPage: photosPerPage, query: query)
+    func makePostsSearchURL(page: Int, postsPerPage: Int, query: String) -> URL? {
+        var components = Self.postsSearchComponents
+        components.queryItems = Self.queryItems(page: page, postsPerPage: postsPerPage, query: query)
         return components.url
     }
     

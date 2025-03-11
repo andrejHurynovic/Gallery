@@ -5,7 +5,7 @@
 //  Created by Andrej Hurynovič on 01.03.2025.
 //
 
-extension PhotosListHelper {
+extension PostsListHelper {
     final class CompositionalLayoutProvider {
         private var storage: [CompositionalLayoutHelper.Requirements: CompositionalLayoutHelper] = [:]
         

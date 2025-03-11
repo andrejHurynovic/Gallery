@@ -1,5 +1,5 @@
 //
-//  PhotoDetailViewController.swift
+//  PostDetailViewController.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 05.03.2025.
@@ -7,17 +7,17 @@
 
 import UIKit
 
-final class PhotoDetailViewController: ReusablePageViewController {
-    private let viewModel: PhotosListViewModel
+final class PostDetailViewController: ReusablePageViewController {
+    private let viewModel: PostsListViewModel
     
     private var lastImageViewWidth: CGFloat = 0.0
     private var contentView = View()
     
     private var imageUpdateTask: Task<Void, Never>?
-    private var photoUpdateTask: Task<Void, Never>?
+    private var postUpdateTask: Task<Void, Never>?
     
     // MARK: - Initialization
-    init(viewModel: PhotosListViewModel) {
+    init(viewModel: PostsListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -41,12 +41,12 @@ final class PhotoDetailViewController: ReusablePageViewController {
         self.index = index
         
         contentView.updateImage(image: nil)
-        updatePhoto()
+        updatePost()
         
-        guard let photo = viewModel.photo(for: index) else { return }
+        guard let post = viewModel.post(for: index) else { return }
         
-        updateImage(photo: photo)
-        contentView.update(with: photo)
+        updateImage(post: post)
+        contentView.update(with: post)
         
         setupActions(for: index)
     }
@@ -61,24 +61,24 @@ final class PhotoDetailViewController: ReusablePageViewController {
     private func prepareForReuse() {
         lastImageViewWidth = 0.0
         imageUpdateTask?.cancel()
-        photoUpdateTask?.cancel()
+        postUpdateTask?.cancel()
     }
 }
 
-private extension PhotoDetailViewController {
-    func updatePhoto() {
+private extension PostDetailViewController {
+    func updatePost() {
         let index = index!
-        photoUpdateTask = Task { [weak self] in
-            await self?.viewModel.updatePhoto(for: index)
+        postUpdateTask = Task { [weak self] in
+            await self?.viewModel.updatePost(for: index)
             guard Task.isCancelled == false,
-            let photo = self?.viewModel.photo(for: index) else { return }
+            let post = self?.viewModel.post(for: index) else { return }
             await MainActor.run {
-                self?.contentView.update(with: photo)
+                self?.contentView.update(with: post)
             }
         }
     }
     
-    func updateImage(photo: (any PhotoProtocol)? = nil) {
+    func updateImage(post: (any PostProtocol)? = nil) {
         let index = index!
         
         let currentImageViewWidth = contentView.imageViewWidth()

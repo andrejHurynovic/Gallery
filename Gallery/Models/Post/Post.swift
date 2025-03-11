@@ -1,5 +1,5 @@
 //
-//  Photo.swift
+//  Post.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 28.02.2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class Photo: PhotoProtocol {
+final class Post: PostProtocol {
     var id: String
     
     var isPersistent: Bool { return false }

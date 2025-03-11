@@ -1,5 +1,5 @@
 //
-//  PhotosListHelper.swift
+//  PostsListHelper.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 03.03.2025.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PhotosListHelper {
+final class PostsListHelper {
     private let layoutHelperProvider = CompositionalLayoutProvider()
     private var layoutHelper: CompositionalLayoutHelper!
     

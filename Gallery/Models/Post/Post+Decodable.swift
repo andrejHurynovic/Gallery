@@ -1,5 +1,5 @@
 //
-//  Photo+Decodable.swift
+//  Post+Decodable.swift
 //  Gallery
 //
 //  Created by Andrej Hurynovič on 28.02.2025.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-extension Photo: Decodable { }
+extension Post: Decodable { }
 
-extension Photo {
+extension Post {
     enum CodingKeys: String, CodingKey {
         case id
         

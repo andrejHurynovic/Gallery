@@ -7,7 +7,7 @@
 
 import UIKit
 
-extension PhotosListHelper {
+extension PostsListHelper {
     final class CompositionalLayoutHelper {
         private let requirements: Requirements
         private var cache: [(section: NSCollectionLayoutSection, numberOfItems: Int)] = []
@@ -71,7 +71,7 @@ extension PhotosListHelper {
     }
 }
 // MARK: - Random Group Generators
-extension PhotosListHelper.CompositionalLayoutHelper {
+extension PostsListHelper.CompositionalLayoutHelper {
     private func generateRandomVerticalGroup() -> CollectionLayoutGroupBox {
         let subitems: [NSCollectionLayoutItem]
         switch Int.random(in: 0...2) {
@@ -111,7 +111,7 @@ extension PhotosListHelper.CompositionalLayoutHelper {
 }
 
 // MARK: - Group Combination Helper
-extension PhotosListHelper.CompositionalLayoutHelper {
+extension PostsListHelper.CompositionalLayoutHelper {
     private func combineGroups(_ boxes: [CollectionLayoutGroupBox], axis: GroupBoxJoinedAxis, layoutSize: NSCollectionLayoutSize) -> CollectionLayoutGroupBox {
         let subitems = boxes.map { $0.item }
         let itemCount = boxes.reduce(0) { $0 + $1.itemsCount }
@@ -130,7 +130,7 @@ extension PhotosListHelper.CompositionalLayoutHelper {
 }
 
 // MARK: - Helpers
-extension PhotosListHelper.CompositionalLayoutHelper {
+extension PostsListHelper.CompositionalLayoutHelper {
     private func createVerticalGroup(from items: [NSCollectionLayoutItem], heightMultiplier: CGFloat, widthMultiplier: CGFloat) -> NSCollectionLayoutGroup {
         let group = NSCollectionLayoutGroup.vertical(layoutSize: requirements.collectionLayoutDimension(heightMultiplier: heightMultiplier, widthMultiplier: widthMultiplier), subitems: items)
         group.interItemSpacing = .fixed(requirements.itemSpacing)
