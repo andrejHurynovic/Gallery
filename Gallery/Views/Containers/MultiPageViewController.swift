@@ -94,6 +94,7 @@ class MultiPageViewController: UIPageViewController {
     
     // MARK: - Private
     private func updateTitleLabels(for index: Int) {
+        guard index < pages.count else { return }
         let titles = getTitles(for: index)
         currentTitle.text = titles.currentTitle
         nextTitle.text = titles.nextTitle
