@@ -7,10 +7,11 @@
 
 import Foundation
 import Network
+import Combine
 
 final class NetworkService: NetworkServiceProtocol {
     @Injected var alertService: (any AlertServiceProtocol)?
-
+    
     private let session = {
         let configuration = URLSessionConfiguration.default
         // Ignoring cache to properly check persistence
@@ -19,7 +20,26 @@ final class NetworkService: NetworkServiceProtocol {
         return session
     }()
     
+    private let networkMonitor = NWPathMonitor()
+    private var isConnectionAvailable: Bool { networkMonitor.currentPath.status == .satisfied }
+    
+    private let _networkAvailablyPublisher = PassthroughSubject<Bool, Never>()
+    lazy var networkAvailablyPublisher = _networkAvailablyPublisher.eraseToAnyPublisher()
+
+    // MARK: - Initialization
+    init() {
+        networkMonitor.pathUpdateHandler = { [weak self] in
+            self?._networkAvailablyPublisher.send($0.status == .satisfied)
+        }
+        networkMonitor.start(queue: .global())
+    }
+    
+    // MARK: - Public
     func fetch(_ endpoint: APIEndpointProtocol) async -> Data? {
+        guard isConnectionAvailable else {
+            Task { await alertService?.showAlert(for: NetworkServiceError.noConnection) }
+            return nil
+        }
         guard let request = endpoint.request else { return nil }
         
         do {
@@ -37,6 +57,7 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
+    // MARK: - Private
     private func handleResponse(data: Data, response: HTTPURLResponse) async -> Data? {
         switch response.statusCode {
         case 200..<300:

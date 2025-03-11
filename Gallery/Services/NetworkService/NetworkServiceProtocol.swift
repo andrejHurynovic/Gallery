@@ -6,7 +6,10 @@
 //
 
 import Foundation
+import Combine
 
 protocol NetworkServiceProtocol {
+    var networkAvailablyPublisher: AnyPublisher<Bool, Never> { get }
+    
     func fetch(_ endpoint: APIEndpointProtocol) async -> Data?
 }
